@@ -38,6 +38,8 @@
         height: var(--cell-size);
         width: var(--cell-size);
         background-color: limegreen;
+        
+        /* transition: all 0.4s; */
     }   
 </style>
 <body>
@@ -59,7 +61,7 @@
             this.foodPos;
             this.snakeHeadDiv; //position of nth child div in #snake
             this.snakeTailDiv; //position of nth child div on #snake
-            this.snakeLength = 3; //can not be set less, 3 is minimum //or it can be less :D
+            this.snakeLength = 23; //can not be set less, 3 is minimum //or it can be less :D
             this.snakeTrail = [];
             // this.snake = document.getElementById('snake-head')
             // this.food = document.getElementById('food');
@@ -74,20 +76,20 @@
             switch(direction){
                 case 'left':
                     newPos = { 
-                        "cellX": this.snakeTrail[this.snakeTrail.length-1].cellX + this.cellSize,
+                        "cellX": this.snakeTrail[this.snakeTrail.length-1].cellX - this.cellSize,
                         "cellY": this.snakeTrail[this.snakeTrail.length-1].cellY 
                     }
                 break;
                 case 'right':
                     newPos = { 
-                        "cellX": this.snakeTrail[this.snakeTrail.length-1].cellX - this.cellSize,
+                        "cellX": this.snakeTrail[this.snakeTrail.length-1].cellX + this.cellSize,
                         "cellY": this.snakeTrail[this.snakeTrail.length-1].cellY 
                     }
                 break;
                 case 'top':
                     newPos = { 
                         "cellX": this.snakeTrail[this.snakeTrail.length-1].cellX,
-                        "cellY": this.snakeTrail[this.snakeTrail.length-1].cellY + this.cellSize 
+                        "cellY": this.snakeTrail[this.snakeTrail.length-1].cellY - this.cellSize 
                     }
                 break;
                 case 'down':
@@ -105,7 +107,8 @@
                     //or eat tail and coninue playing, sounds more fun
                 }
             }
-            if(this.foodPos === newPos){
+            if(this.foodPos.cellX === newPos.cellX & this.foodPos.cellY === newPos.cellY){
+                console.log('eat food');
                 //add new coordinate to array and new div to represent new cell
                 //Points++
                 //spawn(this.food);
@@ -116,11 +119,9 @@
             tail.style.left = newPos.cellX;
             tail.style.top = newPos.cellY;
 
-            console.log(this.snakeTailDiv);
             //update head and tail div tracking
             this.snakeHeadDiv = this.snakeTailDiv;
             if(this.snakeTailDiv === this.snakeLength){
-                console.log('here');
                 this.snakeTailDiv = 1;
             }else{
                 this.snakeTailDiv++;
@@ -129,6 +130,9 @@
             //updating coordinates array
             this.snakeTrail.push(newPos)
             this.snakeTrail.shift()
+
+            // console.log(`newPos: x:${newPos.cellX} y:${newPos.cellY}`)
+            // console.log(`foodPos: x:${this.foodPos.cellX} y:${this.foodPos.cellY}`)
         }
         
         spawn(element){
@@ -206,6 +210,22 @@
         game.updateGame();
     })
 
+    document.addEventListener('keydown', (event)=>{
+        switch(event.key){
+            case 'ArrowLeft':
+                game.moveSnake('left')
+            break;
+            case 'ArrowRight':
+                game.moveSnake('right')
+            break;
+            case 'ArrowUp':
+                game.moveSnake('top')
+            break;
+            case 'ArrowDown':
+                game.moveSnake('down')
+            break;
+        };
+    })
     // event listeners that will change game.snakeDirection based on keys pressed
     
 </script>
