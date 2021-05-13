@@ -53,6 +53,7 @@
         constructor(){
             this.boardSize = 500;
             this.cellSize = 20;
+            this.snakeDirection = 'right';
             // snakeColor
 
             this.snake = document.getElementById('snake-head')
@@ -63,24 +64,52 @@
         updateGame(){
             // main function that will update game at every tick
 
-            moveSnake()
-            // if snake ate food spawnFood
+            moveSnake(this.snakeDirection);
         }
         moveSnake(direction){
+            let newPos;
             switch(direction){
                 case 'left':
-
+                    newPos = { 
+                        "cellX": this.snakeTrail[length].cellX + cellSize,
+                        "cellY": this.snakeTrail[length].cellY 
+                    }
                 break;
                 case 'right':
-
+                    newPos = { 
+                        "cellX": this.snakeTrail[length].cellX - cellSize,
+                        "cellY": this.snakeTrail[length].cellY 
+                    }
                 break;
                 case 'top':
-
+                    newPos = { 
+                        "cellX": this.snakeTrail[length].cellX,
+                        "cellY": this.snakeTrail[length].cellY + cellSize 
+                    }
                 break;
                 case 'down':
-
+                    newPos = { 
+                        "cellX": this.snakeTrail[length].cellX,
+                        "cellY": this.snakeTrail[length].cellY + cellSize
+                    }
                 break;
             }
+            //checking all snake cells if newPos matches snake tail cell
+            for(let i = 0; i < this.snakeTrail.length-3; i++){
+                if( this.snakeTrail[i] === newPos){
+                    //pause game
+                    //or eat tail and coninue playing, sounds more fun
+                }
+            }
+            if(this.foodPos === newPos){
+                //add new coordinate to array and new div to represent new cell
+                //Points++
+                //spawn(this.food);
+            }
+            //Method:3
+            // somehow get last cell div positions and set them to newPos.x and y
+            // this.snakeTrail.push(newPos)
+            // this.snakeTrail.shift()
         }
         spawn(element){
             //generate random coords so food is inside the board and not on snake position
@@ -106,5 +135,8 @@
 
         game.updateGame();
     }, 1000);
+
+    // event listeners that will change game.snakeDirection based on keys pressed
+    
 </script>
 </html>
