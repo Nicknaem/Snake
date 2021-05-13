@@ -12,6 +12,7 @@ remove last positions , and than update all cells so they render on their new po
 
 3. oh actually i can think third way, on every movement just move last cell to new position left, right ...
     cell positions will be updated in array, and in DOM we wont have to change anything, just somehow manipulate "div" positions right way
+    oh just save which div is positioned now Last, which nth child
 
     drawback: I don't know it yet :D 
 

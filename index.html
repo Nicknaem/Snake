@@ -11,7 +11,7 @@
         padding: 0;
         box-sizing: border-box;
     }
-    .game-board{
+    #game-board{
         position: relative;
         width: 500px;
         height: 500px;
@@ -33,7 +33,7 @@
         right: 0;
 
     }
-    #snake-head{
+    #snake > div{
         position: absolute;
         height: var(--cell-size);
         width: var(--cell-size);
@@ -41,11 +41,11 @@
     }   
 </style>
 <body>
-        <div class="game-board">
+        <div id="game-board">
             <div id="snake">
-                <div id="snake-head"></div>
+                <!-- <div id="snake-head"></div> -->
             </div>
-            <div id="food"></div>
+            <!-- <div id="food"></div> -->
         </div>
 </body>
 <script>
@@ -56,11 +56,12 @@
             this.snakeDirection = 'right';
             // snakeColor
             this.foodPos;
-            this.snakeHeadPos;
+            this.snakeHeadDiv; //position of nth child div in #snake
+            this.snakeTailDiv; //position of nth child div on #snake
             this.snakeLength = 3; //can not be set less, 3 is minimum //or it can be less :D
-
-            this.snake = document.getElementById('snake-head')
-            this.food = document.getElementById('food');
+            this.snakeTrail = [];
+            // this.snake = document.getElementById('snake-head')
+            // this.food = document.getElementById('food');
         }
     }
     class Snake extends Config{
@@ -118,53 +119,76 @@
             // this.snakeTrail.shift()
         }
         spawn(element){
+
             //generate random coords so food is inside the board and not on snake position
-            let randX = Math.floor(Math.random()*this.boardSize); //because of floor 500 will never be reached so foodX will be max 490
+            //because of floor 500 will never be reached so foodX will be max 490
+            let randX = Math.floor(Math.random()*this.boardSize); 
             let elementX = randX - randX%this.cellSize;
 
             let randY = Math.floor(Math.random()*this.boardSize);
             let elementY = randY - randY%this.cellSize;
 
-            //drawing element cell
-            element.style.left = elementX;
-            element.style.top = elementY;
-            
             //saving foodPos and SnakeHeadPos
-            switch(element.id){
-                case 'snake-head':
-                    this.snakeHeadPos = { 
-                        "cellX": elementX,
-                        "cellY": elementY
-                    }
-                    //filling snakeTrail with default snake length cells //create div elements for snake cells
-                    for(let i = 0; i<this.snakeLength; i++){
-                        this.snakeTrail.push(this.snakeHeadPos)
-                        document.getElementById('snake').appendChild(document.createElement('div'))
+            switch(element){
+                case 'snake':
+
+                    for(let i = 0; i < this.snakeLength; i++){
+                        //filling snakeTrail with default snake length cells
+                        this.snakeTrail.push(
+                            { 
+                                "cellX": elementX,
+                                "cellY": elementY
+                            }
+                        )
+                        //creating snake divCell
+                        let snakeCell = document.createElement('div');
+                        document.getElementById('snake').appendChild(snakeCell);
+
+                        //draw it
+                        snakeCell.style.left = elementX;
+                        snakeCell.style.top = elementY;
                     }
 
+                    //save which child div is headCell and which child div is lastCell
+                    this.snakeHeadPos = 0;
+                    this.snakeTailPos = this.snakeLength-1;
+
+                    
                 break;
                 case 'food':
                     this.foodPos = { 
                         "cellX": elementX,
                         "cellY": elementY
                     }
+
+                    //creating food divCell
+                    let food = document.createElement('div');
+                    food.id = 'food';
+                    document.getElementById('game-board').appendChild(food);
+
+                    //drawing food divCell
+                    food.style.left = elementX;
+                    food.style.top = elementY;
                 break;
             }
+            
+            
+
 
         }
 
     }
     
     const game = new Snake()
-    game.spawn(game.food);
-    game.spawn(game.snake);
+    game.spawn('food');
+    game.spawn('snake');
 
     // snake.spawnSnake();
 
-    setInterval(() => {
+    // setInterval(() => {
 
-        game.updateGame();
-    }, 1000);
+    //     game.updateGame();
+    // }, 1000);
 
     // event listeners that will change game.snakeDirection based on keys pressed
     
