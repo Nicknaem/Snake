@@ -6,23 +6,90 @@
     <title>Document</title>
 </head>
 <style>
+    *{
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
     .game-board{
         position: relative;
         width: 500px;
         height: 500px;
         margin: auto;
         margin-top: 100px;
-        border: 2px solid black;
+        border: 1px inset black;
     }
+    :root{
+        --cell-size: 20px;
+    }
+    #food{
+        position: absolute;
+        /* default params */
+        height: var(--cell-size);
+        width: var(--cell-size);
+        background-color: red;
 
+        /* temporary */
+        right: 0;
+
+    }
+    #snake-head{
+        position: absolute;
+        height: var(--cell-size);
+        width: var(--cell-size);
+        background-color: limegreen;
+    }   
 </style>
 <body>
         <div class="game-board">
-            <div id="snake"></div>
+            <div id="snake">
+                <div id="snake-head"></div>
+            </div>
             <div id="food"></div>
         </div>
 </body>
 <script>
+    class Config{
+        constructor(){
+            this.boardSize = 500;
+            // cellSize
+            // snakeColor
+            // default snake position
 
+            this.snake = document.getElementById('snake-head')
+            this.food = document.getElementById('food');
+        }
+    }
+    class Snake extends Config{
+        updateGame(){
+            // main function that will update game at every tick
+
+            // if snake ate food spawnFood
+        }
+        spawnSnake(){
+
+        }
+        spawnFood(){
+            //generate random coords so food is inside the board and not on snake position
+            let randX = Math.floor(Math.random()*this.boardSize); //because of floor 500 will never be reached so foodX will be max 490
+            let foodX = randX - randX%10;
+
+            let randY = Math.floor(Math.random()*this.boardSize);
+            let foodY = randY - randY%10;
+
+            this.food.style.left = foodX;
+            this.food.style.top = foodY;
+        }
+
+    }
+    
+    const game = new Snake()
+
+    // snake.spawnSnake();
+
+    setInterval(() => {
+        game.spawnFood();
+        // updateGame();
+    }, 1000);
 </script>
 </html>
