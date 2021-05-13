@@ -55,6 +55,9 @@
             this.cellSize = 20;
             this.snakeDirection = 'right';
             // snakeColor
+            this.foodPos;
+            this.snakeHeadPos;
+            this.snakeLength = 3; //can not be set less, 3 is minimum //or it can be less :D
 
             this.snake = document.getElementById('snake-head')
             this.food = document.getElementById('food');
@@ -68,32 +71,35 @@
         }
         moveSnake(direction){
             let newPos;
+
+            //calculate new position
             switch(direction){
                 case 'left':
                     newPos = { 
-                        "cellX": this.snakeTrail[length].cellX + cellSize,
-                        "cellY": this.snakeTrail[length].cellY 
+                        "cellX": this.snakeTrail[length-1].cellX + cellSize,
+                        "cellY": this.snakeTrail[length-1].cellY 
                     }
                 break;
                 case 'right':
                     newPos = { 
-                        "cellX": this.snakeTrail[length].cellX - cellSize,
-                        "cellY": this.snakeTrail[length].cellY 
+                        "cellX": this.snakeTrail[length-1].cellX - cellSize,
+                        "cellY": this.snakeTrail[length-1].cellY 
                     }
                 break;
                 case 'top':
                     newPos = { 
-                        "cellX": this.snakeTrail[length].cellX,
-                        "cellY": this.snakeTrail[length].cellY + cellSize 
+                        "cellX": this.snakeTrail[length-1].cellX,
+                        "cellY": this.snakeTrail[length-1].cellY + cellSize 
                     }
                 break;
                 case 'down':
                     newPos = { 
-                        "cellX": this.snakeTrail[length].cellX,
-                        "cellY": this.snakeTrail[length].cellY + cellSize
+                        "cellX": this.snakeTrail[length-1].cellX,
+                        "cellY": this.snakeTrail[length-1].cellY + cellSize
                     }
                 break;
             }
+
             //checking all snake cells if newPos matches snake tail cell
             for(let i = 0; i < this.snakeTrail.length-3; i++){
                 if( this.snakeTrail[i] === newPos){
@@ -106,7 +112,7 @@
                 //Points++
                 //spawn(this.food);
             }
-            //Method:3
+            //moving snake //Method:3
             // somehow get last cell div positions and set them to newPos.x and y
             // this.snakeTrail.push(newPos)
             // this.snakeTrail.shift()
@@ -114,13 +120,37 @@
         spawn(element){
             //generate random coords so food is inside the board and not on snake position
             let randX = Math.floor(Math.random()*this.boardSize); //because of floor 500 will never be reached so foodX will be max 490
-            let foodX = randX - randX%this.cellSize;
+            let elementX = randX - randX%this.cellSize;
 
             let randY = Math.floor(Math.random()*this.boardSize);
-            let foodY = randY - randY%this.cellSize;
+            let elementY = randY - randY%this.cellSize;
 
-            element.style.left = foodX;
-            element.style.top = foodY;
+            //drawing element cell
+            element.style.left = elementX;
+            element.style.top = elementY;
+            
+            //saving foodPos and SnakeHeadPos
+            switch(element.id){
+                case 'snake-head':
+                    this.snakeHeadPos = { 
+                        "cellX": elementX,
+                        "cellY": elementY
+                    }
+                    //filling snakeTrail with default snake length cells //create div elements for snake cells
+                    for(let i = 0; i<this.snakeLength; i++){
+                        this.snakeTrail.push(this.snakeHeadPos)
+                        document.getElementById('snake').appendChild(document.createElement('div'))
+                    }
+
+                break;
+                case 'food':
+                    this.foodPos = { 
+                        "cellX": elementX,
+                        "cellY": elementY
+                    }
+                break;
+            }
+
         }
 
     }

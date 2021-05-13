@@ -1,10 +1,18 @@
-well there are two algorithms I can think of how snake should move
+well there are two algorithms I can think of how snake should move:
+
 1. on every movement left,righ.. just add new cell and delete last cell
-this way cells don't really need to know their future positions, no cells will move just add & delete 
+this way cells don't really need to know their future positions, no cells will move just add & delete
+
+    drawback: adding and deleting cells means adding new "div" and removing last cell "div" from DOM, not a good idea
 
 2. make an snakeTrail array, where we will have coordinates of each cell, and on every movement just add new positions to array
 remove last positions , and than update all cells so they render on their new positions
 
+    drawback: well if you have really long snake, you have to change position forEach cell at every single damn tick
+
 3. oh actually i can think third way, on every movement just move last cell to new position left, right ...
+    cell positions will be updated in array, and in DOM we wont have to change anything, just somehow manipulate "div" positions right way
+
+    drawback: I don't know it yet :D 
 
 snakeTrail is array of cell coordinate objects
