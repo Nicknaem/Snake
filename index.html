@@ -53,9 +53,7 @@
         constructor(){
             this.boardSize = 500;
             this.cellSize = 20;
-            // cellSize
             // snakeColor
-            // default snake position
 
             this.snake = document.getElementById('snake-head')
             this.food = document.getElementById('food');
@@ -65,9 +63,25 @@
         updateGame(){
             // main function that will update game at every tick
 
+            moveSnake()
             // if snake ate food spawnFood
         }
+        moveSnake(direction){
+            switch(direction){
+                case 'left':
 
+                break;
+                case 'right':
+
+                break;
+                case 'top':
+
+                break;
+                case 'down':
+
+                break;
+            }
+        }
         spawn(element){
             //generate random coords so food is inside the board and not on snake position
             let randX = Math.floor(Math.random()*this.boardSize); //because of floor 500 will never be reached so foodX will be max 490
@@ -83,13 +97,14 @@
     }
     
     const game = new Snake()
+    game.spawn(game.food);
+    game.spawn(game.snake);
 
     // snake.spawnSnake();
 
     setInterval(() => {
-        game.spawn(game.food);
-        game.spawn(game.snake);
-        // updateGame();
+
+        game.updateGame();
     }, 1000);
 </script>
 </html>
