@@ -41,6 +41,7 @@
     }   
 </style>
 <body>
+        <button id="update">Update Game</button>
         <div id="game-board">
             <div id="snake">
                 <!-- <div id="snake-head"></div> -->
@@ -65,11 +66,7 @@
         }
     }
     class Snake extends Config{
-        updateGame(){
-            // main function that will update game at every tick
 
-            moveSnake(this.snakeDirection);
-        }
         moveSnake(direction){
             let newPos;
 
@@ -77,26 +74,26 @@
             switch(direction){
                 case 'left':
                     newPos = { 
-                        "cellX": this.snakeTrail[length-1].cellX + cellSize,
-                        "cellY": this.snakeTrail[length-1].cellY 
+                        "cellX": this.snakeTrail[this.snakeTrail.length-1].cellX + this.cellSize,
+                        "cellY": this.snakeTrail[this.snakeTrail.length-1].cellY 
                     }
                 break;
                 case 'right':
                     newPos = { 
-                        "cellX": this.snakeTrail[length-1].cellX - cellSize,
-                        "cellY": this.snakeTrail[length-1].cellY 
+                        "cellX": this.snakeTrail[this.snakeTrail.length-1].cellX - this.cellSize,
+                        "cellY": this.snakeTrail[this.snakeTrail.length-1].cellY 
                     }
                 break;
                 case 'top':
                     newPos = { 
-                        "cellX": this.snakeTrail[length-1].cellX,
-                        "cellY": this.snakeTrail[length-1].cellY + cellSize 
+                        "cellX": this.snakeTrail[this.snakeTrail.length-1].cellX,
+                        "cellY": this.snakeTrail[this.snakeTrail.length-1].cellY + this.cellSize 
                     }
                 break;
                 case 'down':
                     newPos = { 
-                        "cellX": this.snakeTrail[length-1].cellX,
-                        "cellY": this.snakeTrail[length-1].cellY + cellSize
+                        "cellX": this.snakeTrail[this.snakeTrail.length-1].cellX,
+                        "cellY": this.snakeTrail[this.snakeTrail.length-1].cellY + this.cellSize
                     }
                 break;
             }
@@ -114,10 +111,24 @@
                 //spawn(this.food);
             }
             //moving snake //Method:3
-            // somehow get last cell div positions and set them to newPos.x and y
-            // this.snakeTrail.push(newPos)
-            // this.snakeTrail.shift()
+            // somehow get last cell div and set its positions to newPos.x and y
+            let tail = document.querySelector(`#snake > div:nth-child(${this.snakeTailDiv})`);
+            tail.style.left = newPos.cellX;
+            tail.style.top = newPos.cellY;
+
+            //update head and tail div tracking
+            this.snakeHeadDiv = this.snakeTailDiv;
+            if(this.snakeTailDiv === this.snakeLengt){
+                this.snakeTailDiv = 1;
+            }else{
+                this.snakeTailDiv++;
+            }; 
+
+            //updating coordinates array
+            this.snakeTrail.push(newPos)
+            this.snakeTrail.shift()
         }
+        
         spawn(element){
 
             //generate random coords so food is inside the board and not on snake position
@@ -128,7 +139,6 @@
             let randY = Math.floor(Math.random()*this.boardSize);
             let elementY = randY - randY%this.cellSize;
 
-            //saving foodPos and SnakeHeadPos
             switch(element){
                 case 'snake':
 
@@ -150,10 +160,10 @@
                     }
 
                     //save which child div is headCell and which child div is lastCell
-                    this.snakeHeadPos = 0;
-                    this.snakeTailPos = this.snakeLength-1;
+                    //$$ values are based on 1...3 they dont match array numbering
+                    this.snakeHeadDiv = this.snakeLength;
+                    this.snakeTailDiv = 1;
 
-                    
                 break;
                 case 'food':
                     this.foodPos = { 
@@ -171,25 +181,30 @@
                     food.style.top = elementY;
                 break;
             }
-            
-            
-
-
         }
 
+        updateGame(){
+            // main function that will update game at every tick
+
+            this.moveSnake(this.snakeDirection);
+        }
     }
     
     const game = new Snake()
     game.spawn('food');
     game.spawn('snake');
 
-    // snake.spawnSnake();
+    // let head = document.querySelector(`#snake > div:nth-child(${game.snakeHeadDiv})`)
+    // let tail = document.querySelector(`#snake > div:nth-child(${game.snakeTailDiv})`)
 
     // setInterval(() => {
-
     //     game.updateGame();
     // }, 1000);
+    document.getElementById('update').addEventListener('click',(event)=>{
+        game.updateGame();
+    })
 
+    game.updateGame();
     // event listeners that will change game.snakeDirection based on keys pressed
     
 </script>
