@@ -52,6 +52,7 @@
     class Config{
         constructor(){
             this.boardSize = 500;
+            this.cellSize = 20;
             // cellSize
             // snakeColor
             // default snake position
@@ -66,19 +67,17 @@
 
             // if snake ate food spawnFood
         }
-        spawnSnake(){
 
-        }
-        spawnFood(){
+        spawn(element){
             //generate random coords so food is inside the board and not on snake position
             let randX = Math.floor(Math.random()*this.boardSize); //because of floor 500 will never be reached so foodX will be max 490
-            let foodX = randX - randX%10;
+            let foodX = randX - randX%this.cellSize;
 
             let randY = Math.floor(Math.random()*this.boardSize);
-            let foodY = randY - randY%10;
+            let foodY = randY - randY%this.cellSize;
 
-            this.food.style.left = foodX;
-            this.food.style.top = foodY;
+            element.style.left = foodX;
+            element.style.top = foodY;
         }
 
     }
@@ -88,7 +87,8 @@
     // snake.spawnSnake();
 
     setInterval(() => {
-        game.spawnFood();
+        game.spawn(game.food);
+        game.spawn(game.snake);
         // updateGame();
     }, 1000);
 </script>
