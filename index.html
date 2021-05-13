@@ -116,9 +116,11 @@
             tail.style.left = newPos.cellX;
             tail.style.top = newPos.cellY;
 
+            console.log(this.snakeTailDiv);
             //update head and tail div tracking
             this.snakeHeadDiv = this.snakeTailDiv;
-            if(this.snakeTailDiv === this.snakeLengt){
+            if(this.snakeTailDiv === this.snakeLength){
+                console.log('here');
                 this.snakeTailDiv = 1;
             }else{
                 this.snakeTailDiv++;
@@ -204,7 +206,6 @@
         game.updateGame();
     })
 
-    game.updateGame();
     // event listeners that will change game.snakeDirection based on keys pressed
     
 </script>
