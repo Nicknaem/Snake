@@ -59,7 +59,7 @@
             this.boardSize = 500;
             this.cellSize = 20;
             this.snakeDirection = 'right';
-            this.speed = 200;
+            this.speed = 2000000;
             // snakeColor
             this.foodPos;
             this.foodDiv;
@@ -82,6 +82,10 @@
             // and new div to represent new cell
             let snakeCell = document.createElement('div');
             this.snakeDiv.appendChild(snakeCell);
+
+            snakeCell.style.left = this.snakeTrail[0].cellX;
+            snakeCell.style.top = this.snakeTrail[0].cellY;
+
             this.snakeLength++;
             // this.snakeTailDiv = 1;
         }
@@ -91,7 +95,6 @@
 
         moveSnake(direction){
             let newPos;
-            console.log(direction);
 
             //calculate new position
             switch(direction){
@@ -121,18 +124,35 @@
                 break;
             }
 
-            //checking all snake cells if newPos matches snake tail cell
+            //checks all snake cells if newPos matches snake tail cell
             for(let i = 0; i < this.snakeTrail.length-3; i++){
                 if( this.snakeTrail[i] === newPos){
                     //pause game
                     //or eat tail and coninue playing, sounds more fun
                 }
             }
+            //checks if snake hit the foodCell
             if(this.foodPos.cellX === newPos.cellX & this.foodPos.cellY === newPos.cellY){
                 this.spawn('food');
                 this.snakeExpand();                
                 //Points++
             }
+            //check if newPos goes out of boundary
+            if(newPos.cellX >= this.boardSize){
+                newPos.cellX -= this.boardSize;
+            }
+            if(newPos.cellX < 0){
+                console.log(newPos.cellX);
+                newPos.cellX = 500 + newPos.cellX; //"+" because cellX is now negative number;
+            }
+            if(newPos.cellY >= this.boardSize){
+                newPos.cellY -= this.boardSize;
+            }
+            if(newPos.cellY < 0){
+                console.log(newPos.cellY);
+                newPos.cellY = 500 + newPos.cellY; //"+" because cellY is now negative number;
+            }
+
             //moving snake //Method:3
             // somehow get last cell div and set its positions to newPos.x and y
             let tail = document.querySelector(`#snake > div:nth-child(${this.snakeTailDiv})`);
@@ -244,19 +264,19 @@
     document.addEventListener('keydown', (event)=>{
         switch(event.key){
             case 'ArrowLeft':
-                // game.moveSnake('left')
+                game.moveSnake('left')
                 game.snakeDirection = 'left';
             break;
             case 'ArrowRight':
-                // game.moveSnake('right')
+                game.moveSnake('right')
                 game.snakeDirection = 'right';
             break;
             case 'ArrowUp':
-                // game.moveSnake('top')
+                game.moveSnake('top')
                 game.snakeDirection = 'top';
             break;
             case 'ArrowDown':
-                // game.moveSnake('down')
+                game.moveSnake('down')
                 game.snakeDirection = 'down';
             break;
         };
