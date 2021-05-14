@@ -63,15 +63,31 @@
             // snakeColor
             this.foodPos;
             this.foodDiv;
+
+            this.snakeDiv = document.getElementById('snake');
             this.snakeHeadDiv; //position of nth child div in #snake
             this.snakeTailDiv; //position of nth child div on #snake
-            this.snakeLength = 5; //can not be set less, 3 is minimum //or it can be less :D
+
+            this.snakeLength = 3; //can not be set less, 3 is minimum //or it can be less :D
             this.snakeTrail = [];
             // this.snake = document.getElementById('snake-head')
             // this.food = document.getElementById('food');
         }
     }
     class Snake extends Config{
+        snakeExpand(){
+            //add new coordinate to array
+            this.snakeTrail.unshift(this.snakeTrail[0]);
+
+            // and new div to represent new cell
+            let snakeCell = document.createElement('div');
+            this.snakeDiv.appendChild(snakeCell);
+            this.snakeLength++;
+            // this.snakeTailDiv = 1;
+        }
+        snakeTrim(){
+
+        }
 
         moveSnake(direction){
             let newPos;
@@ -114,9 +130,8 @@
             }
             if(this.foodPos.cellX === newPos.cellX & this.foodPos.cellY === newPos.cellY){
                 this.spawn('food');
-                //add new coordinate to array and new div to represent new cell
+                this.snakeExpand();                
                 //Points++
-                //spawn(this.food);
             }
             //moving snake //Method:3
             // somehow get last cell div and set its positions to newPos.x and y
@@ -163,7 +178,7 @@
                         )
                         //creating snake divCell
                         let snakeCell = document.createElement('div');
-                        document.getElementById('snake').appendChild(snakeCell);
+                        this.snakeDiv.appendChild(snakeCell);
 
                         //draw it
                         snakeCell.style.left = elementX;
