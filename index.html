@@ -59,7 +59,7 @@
             this.boardSize = 500;
             this.cellSize = 20;
             this.snakeDirection = 'right';
-            this.speed = 2000000;
+            this.speed = 50;
             // snakeColor
             this.foodPos;
             this.foodDiv;
@@ -79,9 +79,9 @@
             //add new coordinate to array
             this.snakeTrail.unshift(this.snakeTrail[0]);
 
-            // and new div to represent new cell
+            // and new div to CORRECT POSITION! to represent new cell
             let snakeCell = document.createElement('div');
-            this.snakeDiv.appendChild(snakeCell);
+            this.snakeDiv.insertBefore(snakeCell, this.snakeDiv.children[this.snakeTailDiv]);
 
             snakeCell.style.left = this.snakeTrail[0].cellX;
             snakeCell.style.top = this.snakeTrail[0].cellY;
@@ -91,6 +91,17 @@
         }
         snakeTrim(){
 
+        }
+        restartGame(){
+            this.snakeDiv.innerHTML = '';
+            this.foodDiv.remove();
+
+            this.snakeLength = 3; //can not be set less, 3 is minimum //or it can be less :D
+            this.snakeTrail = [];
+            this.foodDiv = undefined;
+            
+            this.spawn('snake');
+            this.spawn('food');
         }
 
         moveSnake(direction){
@@ -126,7 +137,8 @@
 
             //checks all snake cells if newPos matches snake tail cell
             for(let i = 0; i < this.snakeTrail.length-3; i++){
-                if( this.snakeTrail[i] === newPos){
+                if( this.snakeTrail[i].cellX === newPos.cellX & this.snakeTrail[i].cellY === newPos.cellY ){
+                    this.restartGame();
                     //pause game
                     //or eat tail and coninue playing, sounds more fun
                 }
@@ -142,14 +154,12 @@
                 newPos.cellX -= this.boardSize;
             }
             if(newPos.cellX < 0){
-                console.log(newPos.cellX);
                 newPos.cellX = 500 + newPos.cellX; //"+" because cellX is now negative number;
             }
             if(newPos.cellY >= this.boardSize){
                 newPos.cellY -= this.boardSize;
             }
             if(newPos.cellY < 0){
-                console.log(newPos.cellY);
                 newPos.cellY = 500 + newPos.cellY; //"+" because cellY is now negative number;
             }
 
@@ -264,19 +274,19 @@
     document.addEventListener('keydown', (event)=>{
         switch(event.key){
             case 'ArrowLeft':
-                game.moveSnake('left')
+                // game.moveSnake('left')
                 game.snakeDirection = 'left';
             break;
             case 'ArrowRight':
-                game.moveSnake('right')
+                // game.moveSnake('right')
                 game.snakeDirection = 'right';
             break;
             case 'ArrowUp':
-                game.moveSnake('top')
+                // game.moveSnake('top')
                 game.snakeDirection = 'top';
             break;
             case 'ArrowDown':
-                game.moveSnake('down')
+                // game.moveSnake('down')
                 game.snakeDirection = 'down';
             break;
         };
