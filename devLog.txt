@@ -22,3 +22,22 @@ snakeTrail is array of cell coordinate objects
 //Tasks
 1. cellSize variable should be set from js
 2. long snakes could have points to move on their tail 
+3. noHit mode just boxShadows when overlapping
+4. turbo functionality
+5. golden apple functionality
+5. different color snakes
+6. snake head styling
+7. spaw lots of foods functionality
+8. gradually speedup
+9. track points 
+10. names of snake
+11. biggerboard
+
+12.no hit mode
+    in given time who will eat the most
+
+13.shrink Zone mode
+    zone shrinks and on every boundary hit you loose one cell
+
+14.hit mode 
+    like in slither io
