@@ -17,3 +17,8 @@ remove last positions , and than update all cells so they render on their new po
     drawback: I don't know it yet :D 
 
 snakeTrail is array of cell coordinate objects
+
+
+//Tasks
+1. cellSize variable should be set from js
+2. long snakes could have points to move on their tail 
