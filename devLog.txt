@@ -16,4 +16,7 @@ remove last positions , and than update all cells so they render on their new po
 
     drawback: I don't know it yet :D 
 
+4. as we need head cell to be static, because of eyes and decorations, I should modify method:3, by just moving last tail cell to 
+    current head cell position and, current headCell to newPosition
+    
 snakeTrail is array of cell coordinate objects
