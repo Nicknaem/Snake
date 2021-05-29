@@ -25,6 +25,7 @@ snakeTrail is array of cell coordinate objects
 3. noHit mode just boxShadows when overlapping
 4. turbo functionality
 5. golden apple functionality
+5. turbo apple 
 5. different color snakes
 6. snake head styling
 7. spaw lots of foods functionality
@@ -32,6 +33,11 @@ snakeTrail is array of cell coordinate objects
 9. track points 
 10. names of snake
 11. biggerboard
+12. catchback functionality spawn food near loosing snake
+13. total score achivements
+14. points shop
+15. mouse movement left click / right click 
+16. stick achivements to user profile, everyone loves stickers
 
 12.no hit mode
     in given time who will eat the most
