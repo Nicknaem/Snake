@@ -103,6 +103,54 @@
     .cells-animated{
         transition: all 0.4s;
     }
+/* =================================== Snake Head ================================== */
+
+    #left-eye{
+    position:absolute;
+    background-color:#adff88;
+    width:35%;
+    height:40%;
+    left:10%;
+    top:20%;
+    border-radius:1px
+    }
+    #right-eye{
+        position:absolute;
+        background-color:#adff88;
+        width:35%;
+        height:40%;
+        right:10%;
+        top:20%;
+        border-radius:1px
+
+    }
+    .eye-ball{
+        position:absolute;
+        width:50%;
+        height:60%;
+        left:10%;
+        top:10%;
+        background-color:#3c3c3c;
+        border-radius:1px;
+    }
+    #mouth{
+        position:absolute;
+        width:80%;
+        height:20%;
+        background-color:#c0edc9;
+        bottom:10%;
+        border-radius:0px 0px 50% 50%;
+        left:50%;
+        transform:translateX(-50%);
+    }
+    #tongue{
+        position:absolute;
+        width:50%;
+        height:250%;
+        background-image: linear-gradient(#cc0000, #ff9090);
+        border-radius:0px 0px 50% 50%;
+        left:30%;
+    }
 </style>
 <body>
         <div id="buttons-board">
@@ -134,6 +182,7 @@ class GameConfig{
         this.boardDiv = document.getElementById('game-board');
 
     }
+}
 
 class Game extends GameConfig{
     constructor(){
@@ -264,7 +313,14 @@ class Snake extends GameConfig{
         //positions match array numbering
         this.snakeTailDivPos = 0;
         this.snakeNeckDivPos = this.snakeLength-1;
+
         this.snakeHeadDiv = this.snakeDiv.children[this.snakeLength-1]; // declare head
+        this.snakeHeadDiv.innerHTML=`
+            <div id="left-eye"> <div class="eye-ball"></div> </div>
+            <div id="right-eye"> <div class="eye-ball"></div> </div>
+            <div id="mouth"> <div id="tongue"></div> </div>
+        `
+        this.snakeHeadDiv.style.transform = "rotate(270deg)" //rotated to right as default start direcition
 
         this.scoreDiv.innerText = this.snakeLength-3;
     }
@@ -339,21 +395,25 @@ class Snake extends GameConfig{
             case 'left':
                 if(this.snakeDirection != "right"){
                     this.snakeDirection = this.moveQueue[0]
+                    this.snakeHeadDiv.style.transform = "rotate(90deg)"
                 }
             break;
             case 'right':
                 if(this.snakeDirection != "left"){
                     this.snakeDirection = this.moveQueue[0]
+                    this.snakeHeadDiv.style.transform = "rotate(270deg)"
                 }
             break;
             case 'up':
                 if(this.snakeDirection != "down"){
                     this.snakeDirection = this.moveQueue[0]
+                    this.snakeHeadDiv.style.transform = "rotate(180deg)"
                 }
             break;
             case 'down':
                 if(this.snakeDirection != "up"){
                     this.snakeDirection = this.moveQueue[0]
+                    this.snakeHeadDiv.style.transform = "rotate(0deg)"
                 }
             break;
         }
@@ -473,7 +533,7 @@ class Snake extends GameConfig{
     // ============================================================ button test functions
     function animateSnake(){
         game.snakeAnimated = !game.snakeAnimated;
-        [...document.querySelectorAll('#snake > div')].forEach((item)=>{
+        [...document.querySelectorAll('[id*=snake] > div')].forEach((item)=>{
             item.classList.toggle('cells-animated');
         });
     }
@@ -482,7 +542,7 @@ class Snake extends GameConfig{
     function foodSpawnCheck(){
         if(interval === undefined){
             interval = setInterval(() => {
-                game.spawn('food');
+                game.spawnFood(4);
                 foodSpawn = undefined;
             }, 50);
         }else{
@@ -498,34 +558,19 @@ class Snake extends GameConfig{
 
         switch(event.key){
             case 'ArrowLeft':
-                //Snakes[0].moveSnake('left')
-                // if(Snakes[0].snakeDirection != "right"){
-                //     Snakes[0].snakeDirection = 'left';
-                // }
                 Snakes[0].moveQueue.push('left')
                 Snakes[0].moveQueue.shift()
             break;
             case 'ArrowRight':
-                //Snakes[0].moveSnake('right')
-                // if(Snakes[0].snakeDirection != "left"){
-                //     Snakes[0].snakeDirection = 'right';
-                // }
+
                 Snakes[0].moveQueue.push('right')
                 Snakes[0].moveQueue.shift()
             break;
             case 'ArrowUp':
-                //Snakes[0].moveSnake('up')
-                // if(Snakes[0].snakeDirection != "down"){
-                //     Snakes[0].snakeDirection = 'up';
-                // }
                 Snakes[0].moveQueue.push('up')
                 Snakes[0].moveQueue.shift()
             break;
             case 'ArrowDown':
-                //Snakes[0].moveSnake('down')
-                // if(Snakes[0].snakeDirection != "up"){
-                //     Snakes[0].snakeDirection = 'down';
-                // }
                 Snakes[0].moveQueue.push('down')
                 Snakes[0].moveQueue.shift()
             break;
@@ -533,28 +578,20 @@ class Snake extends GameConfig{
         if(Snakes[1]!=undefined){
             switch(event.key){
             case 'a':
-                // Snakes[1].moveSnake('left')
-                if(Snakes[1].snakeDirection != "right"){
-                    Snakes[1].snakeDirection = 'left';
-                }
+                Snakes[1].moveQueue.push('left')
+                Snakes[1].moveQueue.shift()
             break;
             case 'd':
-                // Snakes[1].moveSnake('right')
-                if(Snakes[1].snakeDirection != "left"){
-                    Snakes[1].snakeDirection = 'right';
-                }
+                Snakes[1].moveQueue.push('right')
+                Snakes[1].moveQueue.shift()
             break;
             case 'w':
-                // Snakes[1].moveSnake('up')
-                if(Snakes[1].snakeDirection != "down"){
-                    Snakes[1].snakeDirection = 'up';
-                }
+                Snakes[1].moveQueue.push('up')
+                Snakes[1].moveQueue.shift()
             break;
             case 's':
-                // Snakes[1].moveSnake('down')
-                if(Snakes[1].snakeDirection != "up"){
-                    Snakes[1].snakeDirection = 'down';
-                }
+                Snakes[1].moveQueue.push('down')
+                Snakes[1].moveQueue.shift()
             break;
         };
         }
