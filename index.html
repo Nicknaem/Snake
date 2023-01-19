@@ -15,9 +15,9 @@
         box-sizing: border-box;
     }
     body{
-        display: flex;
+        /* display: flex;
         align-items: center;
-        justify-content: space-around;
+        justify-content: space-around; */
     }
     button{
         position: relative;
@@ -53,14 +53,15 @@
     }
     #game-board{
         position: relative;
-        width: 500px;
-        height: 500px;
+        width: 380px;
+        height: 580px;
         /* border: 1px inset black; */
         box-shadow: 0 1px 6px 0px rgb(32 33 36 / 38%);
         border-radius: 5px;
         overflow: hidden;
     }
     #score-board{
+        display: none;
         height: 200px;
         width: 200px;
         box-shadow: 0 1px 6px 0px rgb(32 33 36 / 38%);
@@ -74,7 +75,7 @@
         color: rgb(68, 68, 68);
     }
     #buttons-board{
-        display: flex;
+        display: none;
         flex-direction: column;
         width: 200px;
     }
@@ -151,8 +152,17 @@
         border-radius:0px 0px 50% 50%;
         left:30%;
     }
+
+    .main{
+        display: flex;
+        width: 100%;
+        height: 100%;
+        justify-content: center;
+        align-items: center;
+    }
 </style>
 <body>
+    <div class="main" id="touch-area">
         <div id="buttons-board">
             <button onclick="animateSnake()">toggle animation</button>
             <button onclick="foodSpawnCheck()">check food spawn</button>
@@ -161,26 +171,25 @@
             <!-- <div id="snake">
                 
             </div> -->
-
         </div>
         <div id="score-board">
 
         </div>
+    </div>
 </body>
 <script>
 
 class GameConfig{
     constructor(){
-        //================================== GameConfigurable values
-        this.boardSize = 500;
-        this.cellSize = 20; 
-
-        // snakeColor
-
         //================================== static values
         this.scoreDiv = document.getElementById('score-board');
         this.boardDiv = document.getElementById('game-board');
 
+        //================================== GameConfigurable values
+        this.boardWidth = this.boardDiv.getBoundingClientRect().width;
+        this.boardHeight = this.boardDiv.getBoundingClientRect().height; 
+        this.cellSize = 20; 
+        // snakeColor
     }
 }
 
@@ -218,10 +227,10 @@ class Game extends GameConfig{
         for(let i=0; i<foodAmount; i++){
             //because of floor 500 will never be reached so foodX will be max 490
             //$$! generating coordinates should be a function
-            let randX = Math.floor(Math.random()*this.boardSize); 
+            let randX = Math.floor(Math.random()*this.boardWidth); 
             let elementX = randX - randX%this.cellSize;
 
-            let randY = Math.floor(Math.random()*this.boardSize);
+            let randY = Math.floor(Math.random()*this.boardHeight);
             let elementY = randY - randY%this.cellSize;
 
 
@@ -280,10 +289,10 @@ class Snake extends GameConfig{
         this.snakeAnimated = 0;
     }
     spawnSnake(){
-        let randX = Math.floor(Math.random()*this.boardSize); 
+        let randX = Math.floor(Math.random()*this.boardWidth); 
         let elementX = randX - randX%this.cellSize;
 
-        let randY = Math.floor(Math.random()*this.boardSize);
+        let randY = Math.floor(Math.random()*this.boardHeight);
         let elementY = randY - randY%this.cellSize;
 
         this.boardDiv.insertAdjacentHTML('beforeend',`<div id='snake_${Snake.players}'></div>`)
@@ -452,17 +461,17 @@ class Snake extends GameConfig{
         this.detectFoodHit(newPos,foodMember);
 
         //check if newPos goes out of boundary
-        if(newPos.cellX >= this.boardSize){
-            newPos.cellX -= this.boardSize;
+        if(newPos.cellX >= this.boardWidth){
+            newPos.cellX -= this.boardWidth;
         }
         if(newPos.cellX < 0){
-            newPos.cellX = 500 + newPos.cellX; //"+" because cellX is now negative number;
+            newPos.cellX = this.boardWidth + newPos.cellX; //"+" because cellX is now negative number;
         }
-        if(newPos.cellY >= this.boardSize){
-            newPos.cellY -= this.boardSize;
+        if(newPos.cellY >= this.boardHeight){
+            newPos.cellY -= this.boardHeight;
         }
         if(newPos.cellY < 0){
-            newPos.cellY = 500 + newPos.cellY; //"+" because cellY is now negative number;
+            newPos.cellY = this.boardHeight + newPos.cellY; //"+" because cellY is now negative number;
 
         }
 
@@ -509,7 +518,7 @@ class Snake extends GameConfig{
     // snakeTwo.spawnSnake();
 
     var Snakes = [new Snake()]
-    Snakes.push(new Snake());
+    // Snakes.push(new Snake());
 
     Snakes.forEach((snake,index)=>{
         snake.spawnSnake();
@@ -552,51 +561,164 @@ class Snake extends GameConfig{
         
     }
     
+    function rotateSnake(direction){
+        Snakes[0].moveQueue.push(direction);
+        Snakes[0].moveQueue.shift();
+    }
 
-    // event listeners change Snakes[0].snakeDirection based on keys pressed
     document.addEventListener('keydown', (event)=>{
-
         switch(event.key){
             case 'ArrowLeft':
-                Snakes[0].moveQueue.push('left')
-                Snakes[0].moveQueue.shift()
+                rotateSnake('left')
             break;
             case 'ArrowRight':
-
-                Snakes[0].moveQueue.push('right')
-                Snakes[0].moveQueue.shift()
+                rotateSnake('right')
             break;
             case 'ArrowUp':
-                Snakes[0].moveQueue.push('up')
-                Snakes[0].moveQueue.shift()
+                rotateSnake('up')
             break;
             case 'ArrowDown':
-                Snakes[0].moveQueue.push('down')
-                Snakes[0].moveQueue.shift()
+                rotateSnake('down')
             break;
         };
-        if(Snakes[1]!=undefined){
-            switch(event.key){
-            case 'a':
-                Snakes[1].moveQueue.push('left')
-                Snakes[1].moveQueue.shift()
-            break;
-            case 'd':
-                Snakes[1].moveQueue.push('right')
-                Snakes[1].moveQueue.shift()
-            break;
-            case 'w':
-                Snakes[1].moveQueue.push('up')
-                Snakes[1].moveQueue.shift()
-            break;
-            case 's':
-                Snakes[1].moveQueue.push('down')
-                Snakes[1].moveQueue.shift()
-            break;
-        };
-        }
     })
-    
-    
+
+    // event listeners change Snakes[0].snakeDirection based on keys pressed
+    // document.addEventListener('keydown', (event)=>{
+
+    //     switch(event.key){
+    //         case 'ArrowLeft':
+    //             Snakes[0].moveQueue.push('left')
+    //             Snakes[0].moveQueue.shift()
+    //         break;
+    //         case 'ArrowRight':
+
+    //             Snakes[0].moveQueue.push('right')
+    //             Snakes[0].moveQueue.shift()
+    //         break;
+    //         case 'ArrowUp':
+    //             Snakes[0].moveQueue.push('up')
+    //             Snakes[0].moveQueue.shift()
+    //         break;
+    //         case 'ArrowDown':
+    //             Snakes[0].moveQueue.push('down')
+    //             Snakes[0].moveQueue.shift()
+    //         break;
+    //     };
+    //     if(Snakes[1]!=undefined){
+    //         switch(event.key){
+    //         case 'a':
+    //             Snakes[1].moveQueue.push('left')
+    //             Snakes[1].moveQueue.shift()
+    //         break;
+    //         case 'd':
+    //             Snakes[1].moveQueue.push('right')
+    //             Snakes[1].moveQueue.shift()
+    //         break;
+    //         case 'w':
+    //             Snakes[1].moveQueue.push('up')
+    //             Snakes[1].moveQueue.shift()
+    //         break;
+    //         case 's':
+    //             Snakes[1].moveQueue.push('down')
+    //             Snakes[1].moveQueue.shift()
+    //         break;
+    //     };
+    //     }
+    // })
+
+//================================ swipe controller ====================
+
+let touchArea = document.getElementById("touch-area");
+
+//Initial mouse X and Y positions are 0
+
+let mouseX,
+  initialX = 0;
+let mouseY,
+  initialY = 0;
+let isSwiped;
+
+//Events for touch and mouse
+let events = {
+  mouse: {
+    down: "mousedown",
+    move: "mousemove",
+    up: "mouseup",
+  },
+  touch: {
+    down: "touchstart",
+    move: "touchmove",
+    up: "touchend",
+  },
+};
+
+let deviceType = "";
+
+//Detect touch device
+
+const isTouchDevice = () => {
+  try {
+    //We try to create TouchEvent (it would fail for desktops and throw error)
+    document.createEvent("TouchEvent");
+    deviceType = "touch";
+    return true;
+  } catch (e) {
+    deviceType = "mouse";
+    return false;
+  }
+};
+
+//Get left and top of touchArea
+let rectLeft = touchArea.getBoundingClientRect().left;
+let rectTop = touchArea.getBoundingClientRect().top;
+
+//Get Exact X and Y position of mouse/touch
+const getXY = (e) => {
+  mouseX = (!isTouchDevice() ? e.pageX : e.touches[0].pageX) - rectLeft;
+  mouseY = (!isTouchDevice() ? e.pageY : e.touches[0].pageY) - rectTop;
+};
+
+isTouchDevice();
+
+//Start Swipe
+touchArea.addEventListener(events[deviceType].down, (event) => {
+  isSwiped = true;
+  //Get X and Y Position
+  getXY(event);
+  initialX = mouseX;
+  initialY = mouseY;
+});
+
+//Mousemove / touchmove
+touchArea.addEventListener(events[deviceType].move, (event) => {
+  if (!isTouchDevice()) {
+    event.preventDefault();
+  }
+  if (isSwiped) {
+    getXY(event);
+    let diffX = mouseX - initialX;
+    let diffY = mouseY - initialY;
+    if (Math.abs(diffY) > Math.abs(diffX)) {
+      rotateSnake(diffY > 0 ? "down" : "up");
+    } else {
+      rotateSnake(diffX > 0 ? "right" : "left");
+    }
+  }
+});
+
+//Stop Drawing
+touchArea.addEventListener(events[deviceType].up, () => {
+  isSwiped = false;
+});
+
+touchArea.addEventListener("mouseleave", () => {
+  isSwiped = false;
+});
+
+window.onload = () => {
+  isSwiped = false;
+};
+
 </script>
 </html>

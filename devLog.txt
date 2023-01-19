@@ -52,3 +52,12 @@ snakeTrail is array of cell coordinate objects
 14.hit mode 
     like in slither io
 
+snake events
+at some time a lot of collecting boxes will appear on random locations that could be collected by touching
+this boxes could go with you by animation
+
+freezer box, freezes others,
+nitro box, fast self
+slower box, slows others
+snake color selector
+multiple design themes
