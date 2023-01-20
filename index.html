@@ -155,11 +155,11 @@
 
     .header{
         display: flex;
+        gap: 100px;
         height: 10%;
     }
 
-    #score-board{
-
+    #live-score, #top-score{
         text-align: center;
         vertical-align: center;
         font-weight: bold;
@@ -183,7 +183,8 @@
 <body>
     <div class="main" id="touch-area">
         <div class="header">
-            <div id="score-board"></div>
+            <div id="top-score">0</div>
+            <div id="live-score"></div>
             <div id="buttons-board">
                 <button onclick="animateSnake()">toggle animation</button>
                 <button onclick="foodSpawnCheck()">check food spawn</button>
@@ -206,7 +207,9 @@
 class GameConfig{
     constructor(){
         //================================== static values
-        this.scoreDiv = document.getElementById('score-board');
+        this.liveScoreDiv = document.getElementById('live-score');
+        this.topScoreDiv = document.getElementById('top-score');
+        console.log(this.topScoreDiv)
         this.boardDiv = document.getElementById('game-board');
 
         //================================== GameConfigurable values
@@ -224,7 +227,9 @@ class GameConfig{
             'მალადეც',
             'კუდზე ვიკბინე 😬',
             'მე ნუ მჭამ 🤣',
-            'როცა გშია შენ შენ არხარ 😁'
+            'როცა გშია შენ შენ არხარ 😁',
+            'სსსს....',
+            'ნოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოო',
         ]
     }
 }
@@ -324,6 +329,8 @@ class Snake extends GameConfig{
         this.snakeLength = 3; //can not be set less, 3 is minimum //or it can be less :D
         this.snakeTrail = [];
         this.snakeAnimated = 0;
+
+        this.topScoreDiv.innerText = localStorage.getItem('topScore')
     }
     spawnSnake(){
         let randX = Math.floor(Math.random()*this.boardWidth); 
@@ -368,7 +375,7 @@ class Snake extends GameConfig{
         `
         this.snakeHeadDiv.style.transform = "rotate(270deg)" //rotated to right as default start direcition
 
-        this.scoreDiv.innerText = this.snakeLength-3;
+        this.liveScoreDiv.innerText = this.snakeLength-3;
     }
 
     snakeExpand(){
@@ -397,6 +404,11 @@ class Snake extends GameConfig{
         for(let i = 0; i < this.snakeTrail.length-3; i++){
             if( this.snakeTrail[i].cellX === newPos.cellX & this.snakeTrail[i].cellY === newPos.cellY ){
                 console.log('self hit');
+                if(this.liveScoreDiv.innerText > this.topScoreDiv.innerText){
+                    this.topScoreDiv.innerText = this.liveScoreDiv.innerText;
+                    localStorage.setItem('topScore', this.topScoreDiv.innerText);
+                }
+
                 clearInterval(Snakes[0].interval);
                 this.snakeDiv.children[this.snakeNeckDivPos].innerHTML=`
                 <div class="comment">${this.comments[Math.floor(Math.random() * this.comments.length) + 1]}</div>
@@ -429,14 +441,14 @@ class Snake extends GameConfig{
                 }
                 this.snakeExpand()
                 //update snakes respective score
-                this.scoreDiv.innerText = this.snakeLength-3
+                this.liveScoreDiv.innerText = this.snakeLength-3
             }
         })
         // if(this.foodCoords.cellX === newPos.cellX & this.foodCoords.cellY === newPos.cellY){
         //     this.spawn('food');
         //     this.snakeExpand();                
         //     //Points++ //or we already track snake length
-        //     this.scoreDiv.innerText = this.snakeLength-3
+        //     this.liveScoreDiv.innerText = this.snakeLength-3
         // }
     }
 
