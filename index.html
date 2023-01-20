@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#ffffff">
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-    <link rel="manifest" href="./manifest.json">
+    <link rel="canonical" href="https://nicknaem.github.io/snake/" />
+    <link rel="manifest" href="/Snake/manifest.json">
     <title>Document</title>
 </head>
 <style>
@@ -146,7 +147,7 @@
     #game-board{
         position: relative;
         width: 380px;
-        height: 580px;
+        height: 560px;
         /* border: 1px inset black; */
         box-shadow: 0 1px 6px 0px rgb(32 33 36 / 38%);
         border-radius: 5px;
@@ -156,7 +157,6 @@
     .header{
         display: flex;
         gap: 100px;
-        height: 10%;
     }
 
     #live-score, #top-score{
@@ -200,7 +200,7 @@
         if('serviceWorker' in navigator) {
           navigator.serviceWorker.register('/sw.js');
         };
-      </script>
+    </script>
 </body>
 <script>
 
@@ -209,7 +209,6 @@ class GameConfig{
         //================================== static values
         this.liveScoreDiv = document.getElementById('live-score');
         this.topScoreDiv = document.getElementById('top-score');
-        console.log(this.topScoreDiv)
         this.boardDiv = document.getElementById('game-board');
 
         //================================== GameConfigurable values
@@ -230,6 +229,7 @@ class GameConfig{
             'როცა გშია შენ შენ არხარ 😁',
             'სსსს....',
             'ნოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოოო',
+            'ნუ მკბენ შე გველო 🐍'
         ]
     }
 }
@@ -246,7 +246,7 @@ class Game extends GameConfig{
         this.foodDivs[0].remove();
 
         this.snakeLength = 3; //can not be set less, 3 is minimum //or it can be less :D
-        this.snakeTrail = [];
+        this.snakeBody = [];
         this.foodDivs[0] = undefined;
         
         this.spawn('food');
@@ -276,10 +276,10 @@ class Game extends GameConfig{
             let elementY = randY - randY%this.cellSize;
 
 
-            //if foodCoords matches any snakeTrail position re generate random position and try again
+            //if foodCoords matches any snakeBody position re generate random position and try again
             //snake trail positions should be accesed from somwhere
-            // for(let i=0;i<this.snakeTrail.length;i++){
-            //     if(this.snakeTrail[i].cellX === elementX & this.snakeTrail[i].cellY === elementY){
+            // for(let i=0;i<this.snakeBody.length;i++){
+            //     if(this.snakeBody[i].cellX === elementX & this.snakeBody[i].cellY === elementY){
             //         this.spawnFood('food');
             //         return;
             //     }
@@ -327,7 +327,7 @@ class Snake extends GameConfig{
         this.snakeTailDivPos; //position of nth child div on #snake
       
         this.snakeLength = 3; //can not be set less, 3 is minimum //or it can be less :D
-        this.snakeTrail = [];
+        this.snakeBody = [];
         this.snakeAnimated = 0;
 
         this.topScoreDiv.innerText = localStorage.getItem('topScore')
@@ -346,8 +346,8 @@ class Snake extends GameConfig{
 
         for(let i = 0; i < this.snakeLength; i++){
             // console.log(`pushing obj: ${elementX} ${elementY}`);
-            //filling snakeTrail with default snake length cells
-            this.snakeTrail.push(
+            //filling snakeBody with default snake length cells
+            this.snakeBody.push(
                 { 
                     "cellX": elementX,
                     "cellY": elementY
@@ -380,7 +380,7 @@ class Snake extends GameConfig{
 
     snakeExpand(){
         //add new coordinate to array
-        this.snakeTrail.unshift(this.snakeTrail[0]);
+        this.snakeBody.unshift(this.snakeBody[0]);
 
         // and new div to CORRECT POSITION! to represent new cell
         let snakeCell = document.createElement('div');
@@ -389,20 +389,21 @@ class Snake extends GameConfig{
         }
         this.snakeDiv.insertBefore(snakeCell, this.snakeDiv.children[this.snakeTailDivPos]);
 
-        snakeCell.style.left = this.snakeTrail[0].cellX;
-        snakeCell.style.top = this.snakeTrail[0].cellY;
+        snakeCell.style.left = this.snakeBody[0].cellX;
+        snakeCell.style.top = this.snakeBody[0].cellY;
 
         this.snakeLength++;
         // this.snakeTailDivPos = 1;
     }
+
     snakeTrim(){
         //just trim the part of the snake on self hit would be more fun
     }
 
     detectSelfHit(newPos){
         //checks all snake cells if newPos matches snake tail cell
-        for(let i = 0; i < this.snakeTrail.length-3; i++){
-            if( this.snakeTrail[i].cellX === newPos.cellX & this.snakeTrail[i].cellY === newPos.cellY ){
+        for(let i = 0; i < this.snakeBody.length-3; i++){
+            if( this.snakeBody[i].cellX === newPos.cellX & this.snakeBody[i].cellY === newPos.cellY ){
                 console.log('self hit');
                 if(this.liveScoreDiv.innerText > this.topScoreDiv.innerText){
                     this.topScoreDiv.innerText = this.liveScoreDiv.innerText;
@@ -422,7 +423,7 @@ class Snake extends GameConfig{
         }
     }
 
-    //detectSnakeHit
+    //detectSnakeHit ooouhh shiiit
 
     detectFoodHit(newPos,foodMember){
         //checks if snake hit the foodCell
@@ -453,7 +454,7 @@ class Snake extends GameConfig{
     }
 
     moveSnake(foodMember){
-        let newPos;
+        //set new snakeDirection and rotate head
         switch(this.moveQueue[0]){
             case 'left':
                 if(this.snakeDirection != "right"){
@@ -480,39 +481,36 @@ class Snake extends GameConfig{
                 }
             break;
         }
+
         //calculate new position
+        let newPos;
         switch(this.snakeDirection){
             case 'left':
                 newPos = { 
-                    "cellX": this.snakeTrail[this.snakeTrail.length-1].cellX - this.cellSize,
-                    "cellY": this.snakeTrail[this.snakeTrail.length-1].cellY 
+                    "cellX": this.snakeBody[this.snakeBody.length-1].cellX - this.cellSize,
+                    "cellY": this.snakeBody[this.snakeBody.length-1].cellY 
                 }
             break;
             case 'right':
                 newPos = { 
-                    "cellX": this.snakeTrail[this.snakeTrail.length-1].cellX + this.cellSize,
-                    "cellY": this.snakeTrail[this.snakeTrail.length-1].cellY 
+                    "cellX": this.snakeBody[this.snakeBody.length-1].cellX + this.cellSize,
+                    "cellY": this.snakeBody[this.snakeBody.length-1].cellY 
                 }
             break;
             case 'up':
                 newPos = { 
-                    "cellX": this.snakeTrail[this.snakeTrail.length-1].cellX,
-                    "cellY": this.snakeTrail[this.snakeTrail.length-1].cellY - this.cellSize 
+                    "cellX": this.snakeBody[this.snakeBody.length-1].cellX,
+                    "cellY": this.snakeBody[this.snakeBody.length-1].cellY - this.cellSize 
                 }
             break;
             case 'down':
                 newPos = { 
-                    "cellX": this.snakeTrail[this.snakeTrail.length-1].cellX,
-                    "cellY": this.snakeTrail[this.snakeTrail.length-1].cellY + this.cellSize
+                    "cellX": this.snakeBody[this.snakeBody.length-1].cellX,
+                    "cellY": this.snakeBody[this.snakeBody.length-1].cellY + this.cellSize
                 }
             break;
            
         }
-
-        //detect selft hit
-
-        //detect food hit
-        this.detectFoodHit(newPos,foodMember);
 
         //check if newPos goes out of boundary
         if(newPos.cellX >= this.boardWidth){
@@ -526,31 +524,34 @@ class Snake extends GameConfig{
         }
         if(newPos.cellY < 0){
             newPos.cellY = this.boardHeight + newPos.cellY; //"+" because cellY is now negative number;
-
         }
 
-
-        //Moving snake //Method:4
+        //Moving snake, Visual update //Method:4
         //Last cellDiv to current headDivPosition and current headDiv to newPosition
+
             //get access to tailDiv
-        this.snakeTailDiv = this.snakeDiv.children[this.snakeTailDivPos]; 
+            this.snakeTailDiv = this.snakeDiv.children[this.snakeTailDivPos]; 
             //move tailDiv to Head position => it will become neck
-        this.snakeTailDiv.style.left = this.snakeHeadDiv.style.left;
-        this.snakeTailDiv.style.top = this.snakeHeadDiv.style.top;
+            this.snakeTailDiv.style.left = this.snakeHeadDiv.style.left;
+            this.snakeTailDiv.style.top = this.snakeHeadDiv.style.top;
             //move headDiv to newPos
-        this.snakeHeadDiv.style.left = newPos.cellX;
-        this.snakeHeadDiv.style.top = newPos.cellY;
+            this.snakeHeadDiv.style.left = newPos.cellX;
+            this.snakeHeadDiv.style.top = newPos.cellY;
+
             //update headPos and tailPos tracking => here tail becomes neck
-        this.snakeNeckDivPos = this.snakeTailDivPos;
-        if(this.snakeTailDivPos === this.snakeLength-2){ //-2 because we dont track head, -1 is the head position in array
-            this.snakeTailDivPos = 0;
-        }else{
-            this.snakeTailDivPos++;
-        }; 
+            this.snakeNeckDivPos = this.snakeTailDivPos;
+            if(this.snakeTailDivPos === this.snakeLength-2){ //-2 because we dont track head, -1 is the head position in array
+                this.snakeTailDivPos = 0;
+            }else{
+                this.snakeTailDivPos++;
+            }; 
+
+        //detect food hit
+        this.detectFoodHit(newPos,foodMember);
 
         //updating coordinates array
-        this.snakeTrail.push(newPos)
-        this.snakeTrail.shift()
+        this.snakeBody.push(newPos)
+        this.snakeBody.shift()
 
         this.detectSelfHit(newPos);
     }
@@ -559,12 +560,10 @@ class Snake extends GameConfig{
         // main function that will update game at every tick
         this.moveSnake(foodMember);
     }
-    
-
-
 }
+
     const game = new Game();
-    game.spawnFood(5);
+    game.spawnFood(10);
     
     // const snakeOne = new Snake();
     // const snakeTwo = new Snake();
