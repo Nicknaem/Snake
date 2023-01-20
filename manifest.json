@@ -1,6 +1,6 @@
 {
   "name": "Snake",
-  "short_name": "Snake me",
+  "short_name": "Snake",
   "start_url": "/",
   "display": "standalone",
   "theme_color": "#ffffff",
