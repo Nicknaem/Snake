@@ -8,6 +8,8 @@
     <link rel="canonical" href="https://nicknaem.github.io/snake/" />
     <link rel="manifest" href="/Snake/manifest.json">
     <title>Document</title>
+
+    <script src="/socket.io/socket.io.js"></script>
 </head>
 <style>
     :root{
@@ -25,7 +27,7 @@
         align-items: center;
         justify-content: space-around; */
     }
-    button{
+    /* button{
         position: relative;
         overflow: hidden;
         border: none;
@@ -56,12 +58,12 @@
     }
     button:hover:after{
         left: 25%;
-    }
+    }*/
     #buttons-board{
         display: none;
         flex-direction: column;
         width: 200px;
-    }
+    } 
     #food{
         position: absolute;
         /* default params */
@@ -147,7 +149,7 @@
     #game-board{
         position: relative;
         width: 380px;
-        height: 560px;
+        height: 500px;
         /* border: 1px inset black; */
         box-shadow: 0 1px 6px 0px rgb(32 33 36 / 38%);
         border-radius: 5px;
@@ -157,6 +159,11 @@
     .header{
         display: flex;
         gap: 100px;
+    }
+
+    .footer{
+        display: flex;
+        gap: 10px;
     }
 
     #live-score, #top-score{
@@ -195,7 +202,90 @@
                 
             </div> -->
         </div>
+        <div class="footer">
+            <input id="address" type="text">
+            <button onclick="connect()">Connect</button>
+        </div>
     </div>
+    <script defer>
+        // Array(100).fill(0).forEach((item,index)=>{console.log(index, String.fromCharCode(index))})
+        function connect(){
+            let address = document.querySelector('#address');
+            let path = '5.'+iptotext(address.value,3);   
+            console.log(path)
+            let socket = io(path)
+        }
+
+        function iptotext(address, offset=0){
+            //detects if symbol or number is entered
+            let reverse = !(address[0]>0);
+
+            let text = address.split('').map((char)=>{
+                charCode = char.charCodeAt(0)
+				charNum = parseInt(char)
+
+                if(charCode == 46){return ' '}
+                if(charCode == 32){return '.'}
+
+                return !reverse ? String.fromCharCode(97+charNum+offset) : charCode-97-offset;
+            }).join('');
+
+            return text;   
+        }
+        
+        function iptotextHard(address,offset=0, offsetNext=0){
+            let text = address.split('').map((char,index)=>{
+                charCode = char.charCodeAt(0)
+				charNum = parseInt(char)
+
+                if(charCode == 46){
+                    offset += offsetNext;
+                    return ' ';
+                }
+
+                //different modes
+                // offset+=1;
+
+                //mode
+                // offset+=2
+                // let myRand = (charNum+offset)%26
+                //=========
+
+                return String.fromCharCode(97+charNum+offset)
+                 // return !reverse ? String.fromCharCode(97+myRand) : charCode-97;
+            }).join('');
+
+            return text;   
+        }
+
+        function generateCodes(){
+            for(index in Array(33).fill(0)){
+                console.log(parseInt(index))
+                console.log(iptotext('152.105.120', parseInt(index)))
+            }
+        }
+
+        generateCodes();
+        
+        function texttoip(text){
+            let address = text.split('').map((char,index)=>{
+                let num = char.charCodeAt(0)
+                if(num == 32){return '.'}
+                return char.fromCharCode(num)
+            })  
+
+            return address;
+        }
+
+        function texttocode(text){
+            let code = text.split('').map((char,index)=>{
+                return char.charCodeAt(0) 
+            })         
+            
+            console.log(code)
+        }
+
+    </script>
     <script>
         if('serviceWorker' in navigator) {
           navigator.serviceWorker.register('/sw.js');
@@ -203,6 +293,8 @@
     </script>
 </body>
 <script>
+
+
 
 class GameConfig{
     constructor(){

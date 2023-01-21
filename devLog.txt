@@ -74,3 +74,17 @@ multiplay
 themes changin on the go, when for ex: 10apples eated
 snake speeding up mode
 eating one apple creates 2 mode
+
+update news notifications, 
+    when was update
+    what was updated
+    if updates not seen yet show number badge of how much updates not seen, or red dot
+
+buy me a beer
+copyrights
+made with <3 enthusiasm
+
+fonts on ios, georgian fonts
+correct text tooltips
+
+
