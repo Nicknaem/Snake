@@ -102,9 +102,6 @@ var globalInterval;
 var turbo = false;
 
 function restartGame(){
-    if(limit()){
-        alert('უკვე 10 ჯერ სცადე 😂 ცუდად არ გახდე 😄❤️️');
-    }
 
     snakesDiv.innerHTML = '';
     foodsDiv.innerHTML = '';
@@ -308,14 +305,20 @@ class Snake {
                     localStorage.setItem('topScore', topScoreDiv.innerText);
                 }
 
-                clearInterval(Snakes[0].interval);
+                clearInterval(this.interval);
                 this.snakeDiv.children[this.snakeNeckDivPos].innerHTML=`
-                <div onclick="restartGame()" class="comment">${comments[Math.floor(Math.random() * comments.length-1) + 1]}</div>
-                ` 
-                // this.restartGame();
-                // document.querySelector(`#snake_1 > div:nth-child(${this.snakeHeadDivPos})`).style.boxShadow = "0px 0px 15px rgba(0,0,0,0.9)";
+                    <div 
+                        onclick="restartGame()"
+                        class="comment">
+                        ${comments[Math.floor(Math.random() * comments.length-1) + 1]}
+                    </div>
+                `;
+                if(limit()){
+                    alert('უკვე 10 ჯერ სცადე 😂 ცუდად არ გახდე 😄❤️️');
+                }
                 return;
-                //pause game
+
+                // document.querySelector(`#snake_1 > div:nth-child(${this.snakeHeadDivPos})`).style.boxShadow = "0px 0px 15px rgba(0,0,0,0.9)";
                 //or eat tail and coninue playing, sounds more fun
             }
         }
