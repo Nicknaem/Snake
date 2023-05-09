@@ -1,0 +1,38 @@
+/* 
+#buttons-board{
+    display: none;
+    flex-direction: column;
+    width: 200px;
+} 
+button{
+    position: relative;
+    overflow: hidden;
+    border: none;
+    background-color: tomato;
+    outline: none;
+    margin: 5px;
+    padding: 10px;
+    border-radius: 2px;
+    color: white;
+    font-weight: bold;
+    box-shadow: 0 1px 6px 0px rgb(32 33 36 / 38%);
+    transition: transform 0.4s;
+}
+button::after{
+    content:'';
+    position: absolute;
+    width: 20px;
+    height: 100px;
+    left: 20%;
+    top: -50%;
+    transform: rotate(-30deg);
+    filter:blur(5px);
+    background-color: rgba(255, 255, 255, 0.3);
+    transition: left 0.5s;
+}
+button:hover{
+    transform: perspective(400px) rotateY(20deg);
+}
+button:hover:after{
+    left: 25%;
+}*/

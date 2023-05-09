@@ -9,79 +9,36 @@
 body{
     overscroll-behavior-y: none;
     overflow: hidden;
-    /* display: flex;
-    align-items: center;
-    justify-content: space-around; */
-}
-/* button{
-    position: relative;
-    overflow: hidden;
-    border: none;
-    background-color: tomato;
-    outline: none;
-    margin: 5px;
-    padding: 10px;
-    border-radius: 2px;
-    color: white;
-    font-weight: bold;
-    box-shadow: 0 1px 6px 0px rgb(32 33 36 / 38%);
-    transition: transform 0.4s;
-}
-button::after{
-    content:'';
-    position: absolute;
-    width: 20px;
-    height: 100px;
-    left: 20%;
-    top: -50%;
-    transform: rotate(-30deg);
-    filter:blur(5px);
-    background-color: rgba(255, 255, 255, 0.3);
-    transition: left 0.5s;
-}
-button:hover{
-    transform: perspective(400px) rotateY(20deg);
-}
-button:hover:after{
-    left: 25%;
-}*/
-body{
     transition: background 0.2s;
 }
-[mode="dark"]{
+
+body{
+    --food-color:rgb(255, 28, 69);
+    --board-shadow:  0 1px 6px 0px rgb(32 33 36 / 38%);
+    --face-shade: #adff88;
+}
+[theme="dark"]{
     background-color: black;
+    --food-color:rgb(255, 19, 19);
+    --board-shadow: 0 1px 6px 0px rgba(255, 0, 0, 1);
 }
-
-[mode="dark"] #game-board{
-    box-shadow: 0 1px 6px 0px rgba(255, 0, 0, 1);
-}
-
-[mode="dark"] .food{
-    background-color: rgb(255, 19, 19)
-}
-[mode="dark"] .header{
-    color: rgb(255, 19, 19)
-}
-
-#buttons-board{
-    display: none;
-    flex-direction: column;
-    width: 200px;
-} 
 
 .food{
     position: absolute;
-    /* default params */
     height: var(--cell-size);
     width: var(--cell-size);
-    background-color: rgb(255, 28, 69) ;
+    background-color: var(--food-color);
     box-shadow: 0px 0px 2.5px rgba(0,0,0,0.5);
     border-radius: 2px;
-    /* temporary */
     right: 0;
+    transition: all 0.3s cubic-bezier(.41,.71,.49,1.43);
+}
+.food-small{
+    width: 0px;
+    height: 0px;
 }
 
-[id*=snake] > div{
+.snake-cell{
     position: absolute;
     height: var(--cell-size);
     width: var(--cell-size);
@@ -89,14 +46,21 @@ body{
     box-shadow: 0px 0px 3.5px rgba(0,0,0,1);
     border-radius: 2px;
     
-    /* transition: all 0.4s; */
+    transition: background 0.3s ease-out;
     /* transition: box-shadow 0.4s; */
 }   
-#snake_1:last-child{
+/* #snake_1:last-child{
     transition: all 0.1s;
-}
+} */
 .cells-animated{
     transition: all 0.4s;
+}
+/* .snake-head{
+    transition: all 0.05s;
+} */
+
+#buttons-board{
+    display: none;
 }
 
 /* ==========================================food types ============================*/
@@ -107,16 +71,19 @@ body{
     background-color: rgb(255, 191, 14);
 }
 [type="purple"], [color="purple"] > div{
-    background-color: rgb(216, 24, 152);
+    background-color: rgb(215, 25, 150);
+    --face-shade: rgb(240, 154, 178);
 }
 [type="red"], [color="red"] > div{
-    background-color: rgb(255, 28, 69);
+    background-color: rgb(255, 25, 70);
+    --face-shade: rgb(233, 159, 180);
 }
 [type="green"], [color="green"] > div{
     background-color: limegreen;
 }
 [type="orange"], [color="orange"] > div{
     background-color: rgb(255, 130, 28);
+    --face-shade: rgb(248, 189, 141);
 }
 [type="dark"]{
     background-color: rgb(20, 20, 20);
@@ -127,23 +94,22 @@ body{
 /* =================================== Snake Head ================================== */
 
 #left-eye{
-position:absolute;
-background-color:#adff88;
-width:35%;
-height:40%;
-left:10%;
-top:20%;
-border-radius:1px
+    position:absolute;
+    background-color: var(--face-shade);
+    width:35%;
+    height:40%;
+    left:10%;
+    top:20%;
+    border-radius:1px
 }
 #right-eye{
     position:absolute;
-    background-color:#adff88;
+    background-color: var(--face-shade);
     width:35%;
     height:40%;
     right:10%;
     top:20%;
     border-radius:1px
-
 }
 .eye-ball{
     position:absolute;
@@ -158,7 +124,7 @@ border-radius:1px
     position:absolute;
     width:80%;
     height:20%;
-    background-color:#c0edc9;
+    background-color: var(--face-shade);
     bottom:10%;
     border-radius:0px 0px 50% 50%;
     left:50%;
@@ -186,7 +152,7 @@ border-radius:1px
     width: 380px;
     height: 500px;
     /* border: 1px inset black; */
-    box-shadow: 0 1px 6px 0px rgb(32 33 36 / 38%);
+    box-shadow: var(--board-shadow);
     border-radius: 5px;
     overflow: hidden;
 }
@@ -208,13 +174,13 @@ border-radius:1px
     font-family: Arial, Helvetica;
     font-size: 60px;
     border-radius: 5px;
-    color: rgb(255, 28, 69)
+    color: var(--food-color);
 }
 
 .comment{
     position: absolute;
     border-radius: 7px;
-    color: rgb(255, 28, 69);
+    color: var(--food-color);
     background-color: white;
     padding: 5px;
     box-shadow: 0 1px 6px 0px rgb(32 33 36 / 38%);

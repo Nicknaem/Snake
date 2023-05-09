@@ -88,3 +88,9 @@ fonts on ios, georgian fonts
 correct text tooltips
 
 
+global state
+theme of game light/dark
+live score
+top score
+snake body positions, head position
+food positions

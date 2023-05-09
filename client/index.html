@@ -9,9 +9,10 @@
     <link rel="manifest" href="./manifest.json"> 
     <script defer>
         if('serviceWorker' in navigator) {
-          navigator.serviceWorker
+            navigator.serviceWorker
             .register('/sw.js')
-            .then(() => { console.log('Service Worker Registered'); });
+            .then(() => { console.log('Service Worker Registered'); })
+            .catch(e=>{});
         };
     </script>
 
@@ -54,7 +55,7 @@
         </div>
         <div id="game-board">
             <div id="food-list"></div>
-            <div id="snaks">
+            <div id="snake-list">
                 <!-- <div id="snake_1"></div> -->
             </div>
         </div>
@@ -73,7 +74,7 @@ let liveScoreDiv = document.getElementById('live-score');
 let topScoreDiv = document.getElementById('top-score');
 let boardDiv = document.getElementById('game-board');
 let foodListDiv = document.getElementById('food-list');
-let snakesDiv = document.getElementById('snaks');
+let snakeListDiv = document.getElementById('snake-list');
 
 //================================== GameConfigurable values
 let boardWidth = boardDiv.getBoundingClientRect().width;
@@ -84,17 +85,16 @@ let cellSize = 20;
 let comments =[
     'მეტი შეგეძლო 😂',
     'კუდზე ვიკბინე 😬',
-    'ნუ მჭამ 🍴',
+    'ნუ მჭამ 🍴🍣',
     'როცა გშია შენ შენ არხარ 🍫',
-    'სსსს.... 🩸🩸',
-    'ნოოოოოოოოოოო ',
+    'სსს🩸🩸🩸',
+    'ნოოოოოოოოოოო',
     'ნუ მკბენ შე გველო 🐍',
-    'ბანძო ბანძო 😛',
+    'ბანძო ბანძო 😛😛',
     'ამდენსაც არმოველოდი 😄'
 ]
-
+//    'nitro', nitro excluded for some time
 let foodTypes = [
-    'nitro',
     'multiple',
     'gold',
     'purple',
@@ -112,7 +112,7 @@ var globalInterval;
 
 function restartGame(){
 
-    snakesDiv.innerHTML = '';
+    snakeListDiv.innerHTML = '';
     foodListDiv.innerHTML = '';
     document.body.classList.remove('dark')
     
@@ -153,12 +153,19 @@ function randGridPos(range){
     return randX - randX%cellSize;
 }
 
+/*rules
+on light shouldnot spawn light
+on dark shouldnot spawn dark 
+nitro shouldnot be spawned after 15 length
+feature type should be spawned at odd counts no chances needed
+shouldnot spawn same feature type
+*/
+
 //generate random coords so food is inside the board and not on snake position
 function spawnFood(foodAmount){
     // let stop = false;
-    let chance = Math.floor(Math.random()*3)==1;
+    // let chance = Math.floor(Math.random()*3)==1;
     let type = foodTypes[Math.floor(Math.random()*foodTypes.length)];
-    console.log(chance)
 
     for(let i=0; i<foodAmount; i++){
         let lastFood
@@ -187,12 +194,17 @@ function spawnFood(foodAmount){
         if(!bypass){
             let foodDiv = `
                 <div 
-                    class="food"
-                    type="${chance && lastFood ? type : ''}"
+                    class="food food-small"
+                    type="${lastFood ? type : ''}"
                     style="top:${foodY}; left:${foodX}">
                 </div>
             `;
             foodListDiv.insertAdjacentHTML('beforeend', foodDiv);
+            setTimeout(() => {
+                for( foodDiv of foodListDiv.children){
+                    foodDiv.classList.remove('food-small');
+                }
+            }, 100);
         }
     }
 }
@@ -226,23 +238,15 @@ class Snake {
         }
     }
 
-
-
     spawnSnake(){
         Snake.id++;
-        let randX = Math.floor(Math.random()*boardWidth); 
-        let elementX = randX - randX%cellSize;
+        let elementX = randGridPos(boardWidth)
+        let elementY = randGridPos(boardHeight)
 
-        let randY = Math.floor(Math.random()*boardHeight);
-        let elementY = randY - randY%cellSize;
-
-        snakesDiv.insertAdjacentHTML('beforeend',`<div id='snake_${Snake.id}'></div>`)
+        snakeListDiv.insertAdjacentHTML('beforeend',`<div id='snake_${Snake.id}'></div>`)
         this.snakeDiv = document.getElementById(`snake_${Snake.id}`);
 
-
-
         for(let i = 0; i < this.snakeLength; i++){
-            // console.log(`pushing obj: ${elementX} ${elementY}`);
             //filling snakeBody with default snake length cells
             this.snakeBody.push(
                 { 
@@ -251,14 +255,15 @@ class Snake {
                 }
             )
             //creating snake divCell
-            let snakeCell = document.createElement('div');
-            this.snakeDiv.appendChild(snakeCell);
+            let snakeCell = `
+                <div 
+                    class="snake-cell"
+                    style="top:${elementY}; left:${elementX}">
+                </div>
+            `;
 
-            //draw it
-            snakeCell.style.left = elementX;
-            snakeCell.style.top = elementY;
+            this.snakeDiv.insertAdjacentHTML('beforeend', snakeCell);
         }
-
         //save which child div is TailCell and which child div is NeckCell 
         //positions match array numbering
         this.snakeTailDivPos = 0;
@@ -266,12 +271,18 @@ class Snake {
 
         this.snakeHeadDiv = this.snakeDiv.children[this.snakeLength-1]; // declare head
         this.snakeHeadDiv.innerHTML=`
-            <div id="left-eye"> <div class="eye-ball"></div> </div>
-            <div id="right-eye"> <div class="eye-ball"></div> </div>
-            <div id="mouth"> <div id="tongue"></div> </div>
+            <div id="left-eye"> 
+                <div class="eye-ball"></div>
+            </div>
+            <div id="right-eye"> 
+                <div class="eye-ball"></div>
+            </div>
+            <div id="mouth">
+                <div id="tongue"></div>
+            </div>
         `
         this.snakeHeadDiv.style.transform = "rotate(270deg)" //rotated to right as default start direcition
-
+        this.snakeHeadDiv.classList.add('snake-head');
         liveScoreDiv.innerText = this.snakeLength-3;
     }
 
@@ -280,14 +291,17 @@ class Snake {
         this.snakeBody.unshift(this.snakeBody[0]);
 
         // and new div to CORRECT POSITION! to represent new cell
-        let snakeCell = document.createElement('div');
+        let snakeCell = `
+            <div 
+                class="snake-cell"
+                style="top:${this.snakeBody[0].cellY}; left:${this.snakeBody[0].cellX}">
+            </div>
+        `;
         if(this.snakeAnimated){
             snakeCell.className = "cells-animated";
         }
-        this.snakeDiv.insertBefore(snakeCell, this.snakeDiv.children[this.snakeTailDivPos]);
 
-        snakeCell.style.left = this.snakeBody[0].cellX;
-        snakeCell.style.top = this.snakeBody[0].cellY;
+        this.snakeDiv.children[this.snakeTailDivPos].insertAdjacentHTML('beforebegin',snakeCell)
 
         this.snakeLength++;
         // this.snakeTailDivPos = 1;
@@ -369,10 +383,10 @@ class Snake {
                         this.snakeDiv.setAttribute('color', 'orange')
                     break;
                     case 'dark':
-                        document.body.setAttribute('mode', 'dark')
+                        document.body.setAttribute('theme', 'dark')
                     break;
                     case 'light':
-                        document.body.setAttribute('mode', 'light')
+                        document.body.setAttribute('theme', 'light')
                     break;
                 }
 
