@@ -351,7 +351,7 @@ class Snake {
             if(parseInt(foodDiv.style.top,10) == newPos.cellY && parseInt(foodDiv.style.left,10) === newPos.cellX){
                 switch(foodDiv.getAttribute('type')){
                     case 'nitro':
-                        this.nitro(5,3000);
+                        this.nitro(20,3000);
                     break;
                     case 'gold':
                         spawnFood(6)
