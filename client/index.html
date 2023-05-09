@@ -107,6 +107,7 @@ function restartGame(){
     foodsDiv.innerHTML = '';
     foodCoords = [];
     foodDivs = [];
+    document.body.classList.remove('dark')
     
     spawnFood(10);
 
@@ -319,6 +320,10 @@ class Snake {
         //     //Points++ //or we already track snake length
         //     this.liveScoreDiv.innerText = this.snakeLength-3
         // }
+
+        if(parseInt(liveScoreDiv.innerText) > 4){
+            document.body.classList.add('dark')
+        }
     }
 
     moveSnake(foodMember){

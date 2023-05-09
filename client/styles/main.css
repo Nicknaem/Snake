@@ -45,6 +45,21 @@ button:hover{
 button:hover:after{
     left: 25%;
 }*/
+body{
+    transition: background 0.2s;
+}
+body.dark{
+    background-color: black;
+}
+
+body.dark #game-board{
+    box-shadow: 0 1px 6px 0px rgba(255, 0, 0, 0.7);
+}
+
+body.dark #food{
+    background-color: rgb(255, 19, 19)
+}
+
 #buttons-board{
     display: none;
     flex-direction: column;
