@@ -177,7 +177,7 @@ class Snake {
     constructor(){
         // super(); //when extended from another class
 
-        this.speed = 100;
+        this.speed = 130;
         this.interval;
 
         this.snakeDiv;
@@ -303,7 +303,7 @@ class Snake {
         foodCoords.forEach((food,index)=>{
             if(food.cellX === newPos.cellX & food.cellY == newPos.cellY){
                 if(foodCoords.length==1){
-                    spawnFood(1);
+                    spawnFood(3);
                 }else{
                     foodCoords.splice(index,1);
                     foodDivs.splice(index,1);
