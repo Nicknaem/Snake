@@ -193,7 +193,11 @@ class Snake {
         this.snakeBody = [];
         this.snakeAnimated = 0;
 
-        topScoreDiv.innerText = localStorage.getItem('topScore')
+        
+        let score = localStorage.getItem('topScore');
+        if(score){
+            topScoreDiv.innerText = score 
+        }
     }
     spawnSnake(){
         Snake.id++;
