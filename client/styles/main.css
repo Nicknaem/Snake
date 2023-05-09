@@ -87,6 +87,9 @@ body.dark #food{
     /* transition: all 0.4s; */
     /* transition: box-shadow 0.4s; */
 }   
+#snake_1:last-child{
+    transition: all 0.1s;
+}
 .cells-animated{
     transition: all 0.4s;
 }

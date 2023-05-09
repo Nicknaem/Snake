@@ -82,17 +82,14 @@ let cellSize = 20;
 // snakeColor
 
 let comments =[
-    'დებილი არხარ და თავს რატომ იდებილებ 😂',
     'მეტი შეგეძლო 😂',
-    'ღმერთო ჩემო 😶',
     'კუდზე ვიკბინე 😬',
     'ნუ მჭამ 🍴',
     'როცა გშია შენ შენ არხარ 🍫',
     'სსსს.... 🩸🩸',
-    'ნოოოოოოოოოოოოოოო',
+    'ნოოოოოოოოოოო ',
     'ნუ მკბენ შე გველო 🐍',
-    'იძიოტკა',
-    'ბანძო ბანძო',
+    'ბანძო ბანძო 😛',
     'ამდენსაც არმოველოდი 😄'
 ]
 
@@ -101,8 +98,13 @@ let foodDivs = [];
 let GameState = {
     snakes: []
 };
+var globalInterval;
+var turbo = false;
 
 function restartGame(){
+    if(limit()){
+        alert('უკვე 20 ჯერ სცადე 😂 ცუდად არ გახდე 😄🤍');
+    }
     snakesDiv.innerHTML = '';
     foodsDiv.innerHTML = '';
     foodCoords = [];
@@ -116,7 +118,7 @@ function restartGame(){
 
     Snakes.forEach((snake,index)=>{
         snake.spawnSnake();
-        snake.interval = setInterval(() => {
+        globalInterval = setInterval(() => {
             snake.updateSnake();
         }, snake.speed);
     })
@@ -124,6 +126,21 @@ function restartGame(){
 }
 //timer
 //after some time when dead restart game and save user points
+
+function limit(){
+    let date = new Date()
+    let limitMatch = `${date.getDay()}${date.getHours()}`;
+    let limitMatchStored = localStorage.getItem('limitMatch');
+    let count = localStorage.getItem('limitCount');
+    if(limitMatch === limitMatchStored){
+        count++
+        localStorage.setItem('limitCount', count);
+    }else{
+        localStorage.setItem('limitMatch', limitMatch);
+        localStorage.setItem('limitCount', 1);
+    }
+    return count>20
+}
 
 function spawnFood(foodAmount){
     //generate random coords so food is inside the board and not on snake position
@@ -177,8 +194,9 @@ class Snake {
     constructor(){
         // super(); //when extended from another class
 
-        this.speed = 130;
+        this.speed = 120;
         this.interval;
+        this.turbo = false;
 
         this.snakeDiv;
 
@@ -200,6 +218,16 @@ class Snake {
             topScoreDiv.innerText = score 
         }
     }
+
+    turbo(speed){
+        
+        if(!this.turbo){
+            clearInterval(globalInterval); 
+            // this.interval = setInterval(this.updateSnake(), speed);
+            // this.turbo = true;
+        }
+    }
+
     spawnSnake(){
         Snake.id++;
         let randX = Math.floor(Math.random()*boardWidth); 
@@ -324,9 +352,18 @@ class Snake {
         if(parseInt(liveScoreDiv.innerText) > 30){
             document.body.classList.add('dark')
         }
+        // if(parseInt(liveScoreDiv.innerText) == 5){
+        //     // this.turbo(50)
+        //     if(!turbo){
+        //         clearInterval(globalInterval); 
+        //         globalInterval = setInterval(this.updateSnake(), 100);
+        //         turbo = true;
+        //     }
+        // }
+
     }
 
-    moveSnake(foodMember){
+    moveSnake(){
         //set new snakeDirection and rotate head
         switch(this.moveQueue[0]){
             case 'left':
