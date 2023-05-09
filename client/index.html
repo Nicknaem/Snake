@@ -137,7 +137,7 @@ function limit(){
         localStorage.setItem('limitMatch', limitMatch);
         localStorage.setItem('limitCount', 1);
     }
-    return count>10
+    return count>15
 }
 
 function spawnFood(foodAmount){
@@ -145,7 +145,7 @@ function spawnFood(foodAmount){
     let stop = false;
 
     for(let i=0; i<foodAmount; i++){
-        //because of floor 500 will never be reached so foodX will be max 490
+        //because of floor 500 will never be reached so foodX will be max 480
         //$$! generating coordinates should be a function
         let randX = Math.floor(Math.random()*boardWidth); 
         let foodX = randX - randX%cellSize;
@@ -153,9 +153,8 @@ function spawnFood(foodAmount){
         let randY = Math.floor(Math.random()*boardHeight);
         let foodY = randY - randY%cellSize;
 
-
         //if foodCoords matches any snakeBody position re generate random position and try again
-        //snake body positions should be accesed from somwhere
+        //all snake body positions should be accesed globally, GameState
         GameState.snakes.forEach(snake => {
             snake.forEach((cell)=>{
                 if(cell.cellX === foodX && cell.cellY === foodY){
@@ -194,7 +193,6 @@ class Snake {
 
         this.speed = 120;
         this.interval;
-        this.turbo = false;
 
         this.snakeDiv;
 
@@ -217,14 +215,7 @@ class Snake {
         }
     }
 
-    turbo(speed){
-        
-        if(!this.turbo){
-            clearInterval(globalInterval); 
-            // this.interval = setInterval(this.updateSnake(), speed);
-            // this.turbo = true;
-        }
-    }
+
 
     spawnSnake(){
         Snake.id++;
@@ -295,6 +286,21 @@ class Snake {
         //just trim the part of the snake on self hit would be more fun
     }
 
+    nitro(speed, duration){
+        clearInterval(this.interval);
+
+        this.interval = setInterval(() => {
+            this.updateSnake();
+        }, speed);
+
+        setTimeout(() => {
+            clearInterval(this.interval);
+            this.interval = setInterval(() => {
+                this.updateSnake();
+            }, this.speed);
+        }, duration);
+    }
+
     detectSelfHit(newPos){
         //checks all snake cells if newPos matches snake tail cell
         for(let i = 0; i < this.snakeBody.length-3; i++){
@@ -305,7 +311,8 @@ class Snake {
                     localStorage.setItem('topScore', topScoreDiv.innerText);
                 }
 
-                clearInterval(this.interval);
+                clearInterval(this.interval)
+
                 this.snakeDiv.children[this.snakeNeckDivPos].innerHTML=`
                     <div 
                         onclick="restartGame()"
@@ -314,7 +321,8 @@ class Snake {
                     </div>
                 `;
                 if(limit()){
-                    alert('უკვე 10 ჯერ სცადე 😂 ცუდად არ გახდე 😄❤️️');
+                    let date = new Date()
+                    alert(`უკვე 15 ჯერ სცადე 😂 ცუდად არ გახდე 😄❤️ ${61 - date.getMinutes()} წუთში შეგეშვები 😁`);
                 }
                 return;
 
@@ -333,13 +341,15 @@ class Snake {
         //$$! we could access foodCoords somehow
 
         foodCoords.forEach((food,index)=>{
-            if(food.cellX === newPos.cellX & food.cellY == newPos.cellY){
+            if(food.cellX === newPos.cellX && food.cellY == newPos.cellY){
+
+                //if last food hit spawn new
                 if(foodCoords.length==1){
                     spawnFood(3);
                 }else{
                     foodCoords.splice(index,1);
                     foodDivs.splice(index,1);
-                    foodsDiv.children[index].remove(); //$$foodDivs should be in separate <div id="food"></div>
+                    foodsDiv.children[index].remove(); 
                 }
                 this.snakeExpand()
                 //update snakes respective score
