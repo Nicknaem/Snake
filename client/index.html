@@ -53,7 +53,7 @@
             </div>
         </div>
         <div id="game-board">
-            <div id="foods"></div>
+            <div id="food-list"></div>
             <div id="snaks">
                 <!-- <div id="snake_1"></div> -->
             </div>
@@ -72,7 +72,7 @@
 let liveScoreDiv = document.getElementById('live-score');
 let topScoreDiv = document.getElementById('top-score');
 let boardDiv = document.getElementById('game-board');
-let foodsDiv = document.getElementById('foods');
+let foodListDiv = document.getElementById('food-list');
 let snakesDiv = document.getElementById('snaks');
 
 //================================== GameConfigurable values
@@ -93,20 +93,27 @@ let comments =[
     'ამდენსაც არმოველოდი 😄'
 ]
 
-let foodCoords = [];
-let foodDivs = [];
+let foodTypes = [
+    'nitro',
+    'multiple',
+    'gold',
+    'purple',
+    'red',
+    'green',
+    'orange',
+    'dark',
+    'light'
+];
+
 let GameState = {
     snakes: []
 };
 var globalInterval;
-var turbo = false;
 
 function restartGame(){
 
     snakesDiv.innerHTML = '';
-    foodsDiv.innerHTML = '';
-    foodCoords = [];
-    foodDivs = [];
+    foodListDiv.innerHTML = '';
     document.body.classList.remove('dark')
     
     spawnFood(10);
@@ -140,49 +147,53 @@ function limit(){
     return count>15
 }
 
+function randGridPos(range){
+    //because of floor 500 will never be reached so foodX will be max 480   
+    let randX = Math.floor(Math.random()*range); 
+    return randX - randX%cellSize;
+}
+
+//generate random coords so food is inside the board and not on snake position
 function spawnFood(foodAmount){
-    //generate random coords so food is inside the board and not on snake position
-    let stop = false;
+    // let stop = false;
+    let chance = Math.floor(Math.random()*3)==1;
+    let type = foodTypes[Math.floor(Math.random()*foodTypes.length)];
+    console.log(chance)
 
     for(let i=0; i<foodAmount; i++){
-        //because of floor 500 will never be reached so foodX will be max 480
-        //$$! generating coordinates should be a function
-        let randX = Math.floor(Math.random()*boardWidth); 
-        let foodX = randX - randX%cellSize;
+        let lastFood
+        let bypass = false;
+        if(i === foodAmount-1){
+            lastFood = true
+        }
+        if(i==9){
+            chance = true;
+            type = 'nitro'
+        }
+        let foodX = randGridPos(boardWidth)
+        let foodY = randGridPos(boardHeight)
 
-        let randY = Math.floor(Math.random()*boardHeight);
-        let foodY = randY - randY%cellSize;
-
-        //if foodCoords matches any snakeBody position re generate random position and try again
-        //all snake body positions should be accesed globally, GameState
+        // if foodList matches any snakeBody position re generate random position and try again
+        // all snake body positions should be accesed globally, GameState
         GameState.snakes.forEach(snake => {
             snake.forEach((cell)=>{
                 if(cell.cellX === foodX && cell.cellY === foodY){
                     spawnFood(1);
-                    stop = true;
+                    bypass = true;
                 }
             })
         });
-        if(stop){
-            return;
-        }
 
-        //creating food divCell if it doenot exist
-        if(foodDivs[i] === undefined){
-            let food = document.createElement('div');
-            food.id = 'food';
-            foodsDiv.appendChild(food);
-            foodDivs[i] = food;
+        if(!bypass){
+            let foodDiv = `
+                <div 
+                    class="food"
+                    type="${chance && lastFood ? type : ''}"
+                    style="top:${foodY}; left:${foodX}">
+                </div>
+            `;
+            foodListDiv.insertAdjacentHTML('beforeend', foodDiv);
         }
-
-        //updating foodCoords value
-        foodCoords[i] = { 
-            "cellX": foodX,
-            "cellY": foodY
-        }
-        //drawing food divCell
-        foodDivs[i].style.left = foodCoords[i].cellX;
-        foodDivs[i].style.top = foodCoords[i].cellY;
     }
 }
 
@@ -336,44 +347,50 @@ class Snake {
 
     detectFoodHit(newPos){
         //checks if snake hit the foodCell
-        //$$! food instances could be multiple
-        //$$! new food should not be spawned untill there are multiple foods left.
-        //$$! we could access foodCoords somehow
-
-        foodCoords.forEach((food,index)=>{
-            if(food.cellX === newPos.cellX && food.cellY == newPos.cellY){
-
-                //if last food hit spawn new
-                if(foodCoords.length==1){
-                    spawnFood(3);
-                }else{
-                    foodCoords.splice(index,1);
-                    foodDivs.splice(index,1);
-                    foodsDiv.children[index].remove(); 
+        Array.from(foodListDiv.children).forEach((foodDiv,index)=>{
+            if(parseInt(foodDiv.style.top,10) == newPos.cellY && parseInt(foodDiv.style.left,10) === newPos.cellX){
+                switch(foodDiv.getAttribute('type')){
+                    case 'nitro':
+                        this.nitro(5,3000);
+                    break;
+                    case 'gold':
+                        spawnFood(6)
+                    break;
+                    case 'purple':
+                        this.snakeDiv.setAttribute('color', 'purple')
+                    break;
+                    case 'red':
+                        this.snakeDiv.setAttribute('color', 'red')
+                    break;
+                    case 'green':
+                        this.snakeDiv.setAttribute('color', 'green')
+                    break;
+                    case 'orange':
+                        this.snakeDiv.setAttribute('color', 'orange')
+                    break;
+                    case 'dark':
+                        document.body.setAttribute('mode', 'dark')
+                    break;
+                    case 'light':
+                        document.body.setAttribute('mode', 'light')
+                    break;
                 }
+
+                //if only one foodDiv left spawn new
+                if(foodListDiv.children.length==1){
+                    spawnFood(3);
+                }
+                foodDiv.remove(); 
                 this.snakeExpand()
+
                 //update snakes respective score
                 liveScoreDiv.innerText = this.snakeLength-3
             }
         })
-        // if(this.foodCoords.cellX === newPos.cellX & this.foodCoords.cellY === newPos.cellY){
-        //     this.spawn('food');
-        //     this.snakeExpand();                
-        //     //Points++ //or we already track snake length
-        //     this.liveScoreDiv.innerText = this.snakeLength-3
-        // }
 
         if(parseInt(liveScoreDiv.innerText) > 30){
             document.body.classList.add('dark')
         }
-        // if(parseInt(liveScoreDiv.innerText) == 5){
-        //     // this.turbo(50)
-        //     if(!turbo){
-        //         clearInterval(globalInterval); 
-        //         globalInterval = setInterval(this.updateSnake(), 100);
-        //         turbo = true;
-        //     }
-        // }
 
     }
 

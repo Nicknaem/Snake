@@ -48,16 +48,19 @@ button:hover:after{
 body{
     transition: background 0.2s;
 }
-body.dark{
+[mode="dark"]{
     background-color: black;
 }
 
-body.dark #game-board{
+[mode="dark"] #game-board{
     box-shadow: 0 1px 6px 0px rgba(255, 0, 0, 1);
 }
 
-body.dark #food{
+[mode="dark"] .food{
     background-color: rgb(255, 19, 19)
+}
+[mode="dark"] .header{
+    color: rgb(255, 19, 19)
 }
 
 #buttons-board{
@@ -65,7 +68,8 @@ body.dark #food{
     flex-direction: column;
     width: 200px;
 } 
-#food{
+
+.food{
     position: absolute;
     /* default params */
     height: var(--cell-size);
@@ -76,6 +80,7 @@ body.dark #food{
     /* temporary */
     right: 0;
 }
+
 [id*=snake] > div{
     position: absolute;
     height: var(--cell-size);
@@ -92,6 +97,32 @@ body.dark #food{
 }
 .cells-animated{
     transition: all 0.4s;
+}
+
+/* ==========================================food types ============================*/
+[type="nitro"]{
+    background-color: rgb(14, 118, 255);
+}
+[type="gold"]{
+    background-color: rgb(255, 191, 14);
+}
+[type="purple"], [color="purple"] > div{
+    background-color: rgb(216, 24, 152);
+}
+[type="red"], [color="red"] > div{
+    background-color: rgb(255, 28, 69);
+}
+[type="green"], [color="green"] > div{
+    background-color: limegreen;
+}
+[type="orange"], [color="orange"] > div{
+    background-color: rgb(255, 130, 28);
+}
+[type="dark"]{
+    background-color: rgb(20, 20, 20);
+}
+[type="light"]{
+    background-color: rgb(231, 255, 14);
 }
 /* =================================== Snake Head ================================== */
 
