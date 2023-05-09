@@ -71,18 +71,18 @@ body{
     background-color: rgb(255, 191, 14);
 }
 [type="purple"], [color="purple"] > div{
-    background-color: rgb(215, 25, 150);
-    --face-shade: rgb(240, 154, 178);
+    background-color: rgb(221, 62, 165);
+    --face-shade: rgb(238, 171, 190);
 }
 [type="red"], [color="red"] > div{
-    background-color: rgb(255, 25, 70);
-    --face-shade: rgb(233, 159, 180);
+    background-color: rgb(241, 60, 60);
+    --face-shade: rgb(233, 159, 159);
 }
 [type="green"], [color="green"] > div{
     background-color: limegreen;
 }
 [type="orange"], [color="orange"] > div{
-    background-color: rgb(255, 130, 28);
+    background-color: rgb(233, 140, 63);
     --face-shade: rgb(248, 189, 141);
 }
 [type="dark"]{
