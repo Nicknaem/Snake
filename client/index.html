@@ -59,15 +59,59 @@
                 <!-- <div id="snake_1"></div> -->
             </div>
         </div>
-        <div style="display: none;" class="footer">
-            <input id="address" type="text">
-            <button onclick="connect()">Connect</button>
+        <div class="footer">
+            <img onclick="playPause()" src="./assets/pause.svg" width="35" height="35">
+            <img onclick="debug()" src="./assets/bug.png" width="32px" height="32px">
+            <div style="display:none">
+                <input id="address" type="text">
+                <button onclick="connect()">Connect</button>
+            </div>
         </div>
     </div>
 </body>
 <script>
 
+let paused = false;
+function playPause(){
+    let snake = Snakes[0];
 
+    if(!paused){
+        paused = true;
+        clearInterval(snake.interval);
+    }else{
+        paused = false;
+        snake.interval = setInterval(() => {
+            snake.updateSnake();
+        }, snake.speed);
+    }
+}
+
+let html = {
+    log: (info)=>{
+        let log = document.querySelector('.log')
+        if(!log){
+            document.body.insertAdjacentHTML('afterbegin', `
+                <div class="log" onclick="remove(this)" style="position: absolute; width:100vw; height:100vh">
+                    ${JSON.stringify(info)}
+                    <br>
+                </div>
+            `)
+        }else{
+            log.insertAdjacentHTML('beforeend',JSON.stringify(info))
+            log.insertAdjacentHTML('beforeend', '<br>')
+        }
+    }
+}
+function remove(element){
+    element.remove()
+}
+function debug(){
+    // let snake = Snakes[0];
+    html.log('foodlist element count: '+foodListDiv.children.length);
+    html.log(foodListDiv.children);
+    html.log('found food count: ' + document.querySelectorAll('.food').length);
+    html.log(document.querySelectorAll('.food'));
+}
 
 //================================== static values
 let liveScoreDiv = document.getElementById('live-score');
@@ -108,7 +152,6 @@ let foodTypes = [
 let GameState = {
     snakes: []
 };
-var globalInterval;
 
 function restartGame(){
 
@@ -271,10 +314,10 @@ class Snake {
 
         this.snakeHeadDiv = this.snakeDiv.children[this.snakeLength-1]; // declare head
         this.snakeHeadDiv.innerHTML=`
-            <div id="left-eye"> 
+            <div id="left-eye" class="eyes"> 
                 <div class="eye-ball"></div>
             </div>
-            <div id="right-eye"> 
+            <div id="right-eye" class="eyes"> 
                 <div class="eye-ball"></div>
             </div>
             <div id="mouth">
@@ -338,13 +381,27 @@ class Snake {
 
                 clearInterval(this.interval)
 
-                this.snakeDiv.children[this.snakeNeckDivPos].innerHTML=`
-                    <div 
-                        onclick="restartGame()"
-                        class="comment">
-                        ${comments[Math.floor(Math.random() * comments.length-1) + 1]}
-                    </div>
-                `;
+                this.snakeHeadDiv.classList.add('head-animation');
+
+                this.snakeHeadDiv.querySelectorAll('.eye-ball').forEach((eyeDiv)=>{
+                    setTimeout(() => {
+                        eyeDiv.classList.add('eye-close')
+                    }, 700);
+                    setTimeout(() => {
+                        eyeDiv.innerText = '❤️';
+                        eyeDiv.classList.remove('eye-close');
+                        eyeDiv.classList.add('eye-open');
+                        this.snakeHeadDiv.onclick = restartGame;
+                        this.snakeHeadDiv.insertAdjacentHTML('beforeend',`
+                            <div 
+                                onclick="restartGame()"
+                                class="comment">
+                                ${comments[Math.floor(Math.random() * comments.length-1) + 1]}
+                            </div>
+                        `)
+                    }, 900);
+                })
+
                 if(limit()){
                     let date = new Date()
                     alert(`უკვე 15 ჯერ სცადე 😂 ცუდად არ გახდე 😄❤️ ${61 - date.getMinutes()} წუთში შეგეშვები 😁`);
