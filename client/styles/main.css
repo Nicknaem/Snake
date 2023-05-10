@@ -138,7 +138,6 @@ body{
 
 /* =================================== animations */
 .head-animation{
-    -webkit-transition: all 1s cubic-bezier(.41,.71,.49,1.43);
     transition: all 1s cubic-bezier(.41,.71,.49,1.43);
     top: 200px !important;
     left: 140px !important;

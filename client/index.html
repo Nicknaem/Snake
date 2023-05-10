@@ -186,8 +186,7 @@ function restartGame(){
     snakeListDiv.innerHTML = '';
     foodListDiv.innerHTML = '';
     document.body.classList.remove('dark')
-    console.log(bonusApples)
-    spawnFood(10 + bonusApples);
+    spawnFood(10);
 
     Snakes[0] = new Snake()
     // Snakes.push(new Snake());
