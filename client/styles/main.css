@@ -138,10 +138,12 @@ body{
 
 /* =================================== animations */
 .head-animation{
+    -webkit-transition: all 1s cubic-bezier(.41,.71,.49,1.43);
     transition: all 1s cubic-bezier(.41,.71,.49,1.43);
     top: 50% !important;
     left: 50% !important;
-    transform: translate3d(-50%, -50%, 0) rotate(0) !important;
+    -webkit-transform: translate(-50%, -50%) rotate(0) !important;
+    transform: translate(-50%, -50%) rotate(0) !important;
     width: 100px !important;
     height: 100px !important;
 }
