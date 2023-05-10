@@ -124,6 +124,7 @@ let snakeListDiv = document.getElementById('snake-list');
 let boardWidth = boardDiv.getBoundingClientRect().width;
 let boardHeight = boardDiv.getBoundingClientRect().height; 
 let cellSize = 20; 
+let bonusApples = 0;
 // snakeColor
 
 let comments =[
@@ -135,31 +136,58 @@ let comments =[
     'ნოოოოოოოოოოო',
     'ნუ მკბენ შე გველო 🐍',
     'ბანძო ბანძო 😛😛',
-    'ამდენსაც არმოველოდი 😄'
+    'ამდენსაც არმოველოდი 😄',
 ]
-//    'nitro', nitro excluded for some time
+
 let foodTypes = [
-    'multiple',
+    '_nitro',
+    '_multiple',
     'gold',
-    'purple',
-    'red',
-    'green',
+    '_purple',
+    '_red',
+    '_green',
     'orange',
     'dark',
     'light'
 ];
 
+let emojiList = [
+    ['130','💊'],
+    ['120','🐍'],
+    ['100','🏆'],
+    ['50','⭐'],
+    ['0','❤️']
+]
+    
+function eyeType(amount){
+    for(item of emojiList){
+        if(liveScore >= item[0]){
+            return item[1]
+        }
+    }
+}
+
 let GameState = {
     snakes: []
 };
+
+let topScore = localStorage.getItem('topScore');
+let liveScore = 0;
+topScoreDiv.innerText = topScore;
+liveScoreDiv.innerText = liveScore;
+
+if(topScore){
+    topScoreDiv.innerText = topScore;
+    bonusApples = Math.floor(topScore/10); 
+}
 
 function restartGame(){
 
     snakeListDiv.innerHTML = '';
     foodListDiv.innerHTML = '';
     document.body.classList.remove('dark')
-    
-    spawnFood(10);
+    console.log(bonusApples)
+    spawnFood(10 + bonusApples);
 
     Snakes[0] = new Snake()
     // Snakes.push(new Snake());
@@ -213,12 +241,16 @@ function spawnFood(foodAmount){
     for(let i=0; i<foodAmount; i++){
         let lastFood
         let bypass = false;
+
         if(i === foodAmount-1){
             lastFood = true
         }
         if(i==9){
-            chance = true;
             type = 'nitro'
+        }
+        if(type === document.body.className){
+            spawnFood(1);
+            bypass = true
         }
         let foodX = randGridPos(boardWidth)
         let foodY = randGridPos(boardHeight)
@@ -273,12 +305,6 @@ class Snake {
         this.snakeLength = 3; //can not be set less, 3 is minimum //or it can be less :D
         this.snakeBody = [];
         this.snakeAnimated = 0;
-
-        
-        let score = localStorage.getItem('topScore');
-        if(score){
-            topScoreDiv.innerText = score 
-        }
     }
 
     spawnSnake(){
@@ -326,7 +352,6 @@ class Snake {
         `
         this.snakeHeadDiv.style.transform = "rotate(270deg)" //rotated to right as default start direcition
         this.snakeHeadDiv.classList.add('snake-head');
-        liveScoreDiv.innerText = this.snakeLength-3;
     }
 
     snakeExpand(){
@@ -374,9 +399,10 @@ class Snake {
         for(let i = 0; i < this.snakeBody.length-3; i++){
             if( this.snakeBody[i].cellX === newPos.cellX & this.snakeBody[i].cellY === newPos.cellY ){
                 console.log('self hit');
-                if(parseInt(liveScoreDiv.innerText) > parseInt(topScoreDiv.innerText)){
-                    topScoreDiv.innerText = liveScoreDiv.innerText;
-                    localStorage.setItem('topScore', topScoreDiv.innerText);
+                if(liveScore > topScore){
+                    topScore = liveScore;
+                    localStorage.setItem('topScore', topScore);
+                    topScoreDiv.innerText = topScore;
                 }
 
                 clearInterval(this.interval)
@@ -388,19 +414,21 @@ class Snake {
                         eyeDiv.classList.add('eye-close')
                     }, 700);
                     setTimeout(() => {
-                        eyeDiv.innerText = '❤️';
+                        eyeDiv.innerText = eyeType();
                         eyeDiv.classList.remove('eye-close');
                         eyeDiv.classList.add('eye-open');
                         this.snakeHeadDiv.onclick = restartGame;
-                        this.snakeHeadDiv.insertAdjacentHTML('beforeend',`
-                            <div 
-                                onclick="restartGame()"
-                                class="comment">
-                                ${comments[Math.floor(Math.random() * comments.length-1) + 1]}
-                            </div>
-                        `)
                     }, 900);
                 })
+                setTimeout(() => {
+                    this.snakeHeadDiv.insertAdjacentHTML('beforeend',`
+                        <div 
+                            onclick="restartGame()"
+                            class="comment">
+                            ${comments[Math.floor(Math.random() * comments.length-1) + 1]}
+                        </div>
+                    `)
+                }, 900);
 
                 if(limit()){
                     let date = new Date()
@@ -455,11 +483,12 @@ class Snake {
                 this.snakeExpand()
 
                 //update snakes respective score
-                liveScoreDiv.innerText = this.snakeLength-3
+                liveScore = this.snakeLength-3
+                liveScoreDiv.innerText = liveScore;
             }
         })
 
-        if(parseInt(liveScoreDiv.innerText) > 30){
+        if(liveScore > 30){
             document.body.classList.add('dark')
         }
 

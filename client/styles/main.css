@@ -82,7 +82,7 @@ body{
     background-color: limegreen;
 }
 [type="orange"], [color="orange"] > div{
-    background-color: rgb(233, 140, 63);
+    background-color: rgb(255, 144, 40);
     --face-shade: rgb(248, 189, 141);
 }
 [type="dark"]{
