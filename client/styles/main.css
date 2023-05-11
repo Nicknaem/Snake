@@ -14,13 +14,13 @@ body{
 
 body{
     --food-color:rgb(255, 28, 69);
-    --board-shadow:  0 1px 6px 0px rgb(32 33 36 / 38%);
+    --board-shadow:  0 0 8px 0px rgb(32 33 36 / 38%);
     --face-shade: #adff88;
 }
 [theme="dark"]{
     background-color: black;
     --food-color:rgb(255, 19, 19);
-    --board-shadow: 0 1px 6px 0px rgba(255, 0, 0, 1);
+    --board-shadow: 0 0 10px 2px rgba(255, 0, 0, 1);
 }
 
 .food{
@@ -173,17 +173,18 @@ body{
 
 #game-board{
     position: relative;
-    width: 380px;
+    width: 360px;
     height: 500px;
     /* border: 1px inset black; */
     box-shadow: var(--board-shadow);
-    border-radius: 5px;
+    border-radius: 10px;
     overflow: hidden;
 }
 
 .header{
     display: flex;
     gap: 100px;
+    margin: 5px 0 5px 0;
 }
 
 .footer{
@@ -191,6 +192,8 @@ body{
     /* gap: 20px; */
     justify-content: space-between;
     margin-top: 20px;
+    padding: 0 15px 0 15px;
+    width: 100%;
 }
 
 #live-score, #top-score{
@@ -199,7 +202,6 @@ body{
     font-weight: bold;
     font-family: Arial, Helvetica;
     font-size: 60px;
-    border-radius: 5px;
     color: var(--food-color);
 }
 
