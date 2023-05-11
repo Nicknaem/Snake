@@ -157,7 +157,7 @@ body{
     width: 100%;
     background-color: unset;
     height: 100%;
-    font-size: 1.9em;
+    font-size: 2em;
     display:flex;
     justify-content: center;
     align-items:center;
@@ -188,7 +188,8 @@ body{
 
 .footer{
     display: flex;
-    gap: 20px;
+    /* gap: 20px; */
+    justify-content: space-between;
     margin-top: 20px;
 }
 
