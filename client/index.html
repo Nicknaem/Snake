@@ -191,6 +191,10 @@ if(topScore){
 
 function restartGame(){
 
+    if(topScore > 100 && limitMinutes()){
+        alert('👀 მოუფრთხილდი ❤️❤️');
+        return;
+    }
     snakeListDiv.innerHTML = '';
     foodListDiv.innerHTML = '';
     document.body.classList.remove('dark')
@@ -223,6 +227,31 @@ function limit(){
         localStorage.setItem('limitCount', 1);
     }
     return count>15
+}
+
+function limitMinutes(){
+    let date = new Date()
+    let limitMatch = `${date.getDay()}`;
+    let limitMatchStored = localStorage.getItem('limitDayMatch');
+
+    if(limitMatch === limitMatchStored){
+        let startTime = localStorage.getItem('startTime');
+        let playTime = localStorage.getItem('playTime');
+        if(startTime){
+            if(startTime < date.getMinutes){ return false}
+            let totalTime = date.getMinutes() - startTime + playTime;
+            if( totalTime > 15){
+                return true;
+            }else{
+                localStorage.setItem('playTime',  date.getMinutes() - startTime);
+            }
+        }else{
+            localStorage.setItem('startTime', date.getMinutes())
+        }
+    }else{
+        localStorage.setItem('limitDayMatch', limitMatch);
+    }
+    return false;
 }
 
 function randGridPos(range){
@@ -437,10 +466,10 @@ class Snake {
                     `)
                 }, 900);
 
-                if(limit()){
-                    let date = new Date()
-                    alert(`უკვე 15 ჯერ სცადე 😂 ცუდად არ გახდე 😄❤️ ${61 - date.getMinutes()} წუთში შეგეშვები 😁`);
-                }
+                // if(limit()){
+                //     let date = new Date()
+                //     alert(`უკვე 15 ჯერ სცადე 😂 ცუდად არ გახდე 😄❤️ ${61 - date.getMinutes()} წუთში შეგეშვები 😁`);
+                // }
                 return;
 
                 // document.querySelector(`#snake_1 > div:nth-child(${this.snakeHeadDivPos})`).style.boxShadow = "0px 0px 15px rgba(0,0,0,0.9)";
