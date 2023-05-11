@@ -58,6 +58,9 @@
             <div id="snake-list">
                 <!-- <div id="snake_1"></div> -->
             </div>
+            <div class="layer-list">
+                <div id="layer_1"></div>
+            </div>
         </div>
         <div class="footer">
             <img onclick="playPause()" src="./assets/pause.svg" width="35" height="35">
@@ -119,6 +122,7 @@ let topScoreDiv = document.getElementById('top-score');
 let boardDiv = document.getElementById('game-board');
 let foodListDiv = document.getElementById('food-list');
 let snakeListDiv = document.getElementById('snake-list');
+let activeLayer = document.getElementById('layer_1');
 
 //================================== GameConfigurable values
 let boardWidth = boardDiv.getBoundingClientRect().width;
@@ -172,6 +176,10 @@ let GameState = {
 };
 
 let topScore = localStorage.getItem('topScore');
+if(topScore === 142){
+    localStorage.setItem('topScore', 199)
+    topScore = 199;
+}
 let liveScore = 0;
 topScoreDiv.innerText = topScore;
 liveScoreDiv.innerText = liveScore;
@@ -729,7 +737,21 @@ class Snake {
     //     };
     //     }
     // })
+//================================ painter ============================
+function paint(x,y){
+    let correctX = x-x%cellSize 
+    let correctY = y-y%cellSize 
 
+    let blockDiv = `
+        <div 
+            class="block block-small"
+            type="grass"
+            style="top:${correctY}; left:${correctX}">
+        </div>
+    `;
+    activeLayer.insertAdjacentHTML('beforeend', blockDiv);
+    activeLayer.lastElementChild.classList.remove('block-small');
+}
 //================================ swipe controller ====================
 
 let touchArea = document.getElementById("touch-area");
@@ -791,6 +813,7 @@ touchArea.addEventListener(events[deviceType].down, (event) => {
   getXY(event);
   initialX = mouseX;
   initialY = mouseY;
+//   paint(initialX, initialY)
 });
 
 //Mousemove / touchmove
