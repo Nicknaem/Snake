@@ -237,7 +237,7 @@ function limitMinutes(){
         let startTime = localStorage.getItem('startTime');
         let playTime = localStorage.getItem('playTime');
         if(startTime){
-            if(startTime < date.getMinutes){ return false}
+            if(startTime > date.getMinutes){ return false}
             let totalTime = date.getMinutes() - startTime + playTime;
             if( totalTime > 15){
                 return true;
