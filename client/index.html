@@ -122,7 +122,6 @@ let topScoreDiv = document.getElementById('top-score');
 let boardDiv = document.getElementById('game-board');
 let foodListDiv = document.getElementById('food-list');
 let snakeListDiv = document.getElementById('snake-list');
-let activeLayer = document.getElementById('layer_1');
 
 //================================== GameConfigurable values
 let boardWidth = boardDiv.getBoundingClientRect().width;
@@ -307,7 +306,7 @@ function spawnFood(foodAmount){
                 <div 
                     class="food food-small"
                     type="${lastFood ? type : ''}"
-                    style="top:${foodY}; left:${foodX}">
+                    style="left:${foodX}; top:${foodY}">
                 </div>
             `;
             foodListDiv.insertAdjacentHTML('beforeend', foodDiv);
@@ -363,7 +362,7 @@ class Snake {
             let snakeCell = `
                 <div 
                     class="snake-cell"
-                    style="top:${elementY}; left:${elementX}">
+                    style="left:${elementX}; top:${elementY}">
                 </div>
             `;
 
@@ -398,7 +397,7 @@ class Snake {
         let snakeCell = `
             <div 
                 class="snake-cell"
-                style="top:${this.snakeBody[0].cellY}; left:${this.snakeBody[0].cellX}">
+                style="left:${this.snakeBody[0].cellX}; top:${this.snakeBody[0].cellY}">
             </div>
         `;
         if(this.snakeAnimated){
@@ -767,19 +766,60 @@ class Snake {
     //     }
     // })
 //================================ painter ============================
+let activeLayer = document.getElementById('layer_1');
+let activeBlock = 'grass'
 function paint(x,y){
     let correctX = x-x%cellSize 
-    let correctY = y-y%cellSize 
+    let correctY = y-y%cellSize
+
+    if(activeLayer.querySelector(`[style='left:${correctX}; top:${correctY}'][type='${activeBlock}']`)){
+        console.log('came')
+        return;
+    }
+
+    let sides = [
+        [correctX-cellSize, correctY, 'side-left','side-right'],
+        [correctX+cellSize, correctY, 'side-right', 'side-left'],
+        [correctX, correctY-cellSize, 'side-top', 'side-bottom'],
+        [correctX, correctY+cellSize, 'side-bottom', 'side-top']
+    ]
+
+    let corners = [
+        [correctX-cellSize, correctY-cellSize, 'corner-top-left', 'corner-bottom-right'],
+        [correctX+cellSize, correctY-cellSize, 'corner-top-right', 'corner-bottom-left'],
+        [correctX-cellSize, correctY+cellSize, 'corner-bottom-left', 'corner-top-right'],
+        [correctX+cellSize, correctY+cellSize, 'corner-bottom-right', 'corner-top-left']
+    ]
+
+    let sideClassList = [];
+    sides.forEach((coord)=>{
+        let sideBlock = activeLayer.querySelector(`[style='left:${coord[0]}; top:${coord[1]}'][type='${activeBlock}']`);
+        if(sideBlock){
+            sideClassList.push(coord[2]);
+            sideBlock.classList.add(coord[3])
+        }
+    })
+
+    let cornerClassList = [];
+    corners.forEach((coord)=>{
+        let cornerBlock = activeLayer.querySelector(`[style='left:${coord[0]}; top:${coord[1]}'][type='${activeBlock}']`);
+        if(cornerBlock){
+            cornerClassList.push(coord[2]);
+            cornerBlock.classList.add(coord[3])
+        }
+    })
 
     let blockDiv = `
         <div 
-            class="block block-small"
-            type="grass"
-            style="top:${correctY}; left:${correctX}">
+            class="block block-small ${sideClassList.join(' ')} ${cornerClassList.join(' ')}"
+            type="${activeBlock}"
+            style="left:${correctX}; top:${correctY}">
         </div>
     `;
     activeLayer.insertAdjacentHTML('beforeend', blockDiv);
-    activeLayer.lastElementChild.classList.remove('block-small');
+    setTimeout(() => {
+        activeLayer.lastElementChild.classList.remove('block-small');
+    }, 10);
 }
 //================================ swipe controller ====================
 
@@ -826,6 +866,8 @@ const isTouchDevice = () => {
 //Get left and top of touchArea
 let rectLeft = touchArea.getBoundingClientRect().left;
 let rectTop = touchArea.getBoundingClientRect().top;
+let boardLeft = boardDiv.getBoundingClientRect().left
+let boardTop = boardDiv.getBoundingClientRect().top
 
 //Get Exact X and Y position of mouse/touch
 const getXY = (e) => {
@@ -842,7 +884,11 @@ touchArea.addEventListener(events[deviceType].down, (event) => {
   getXY(event);
   initialX = mouseX;
   initialY = mouseY;
-//   paint(initialX, initialY)
+  
+  //todo should also restrict after right bottom corner
+//   if(mouseX > boardLeft && mouseY > boardTop){
+//       paint(mouseX-boardLeft, mouseY-boardTop)
+//   }
 });
 
 //Mousemove / touchmove
@@ -859,6 +905,9 @@ touchArea.addEventListener(events[deviceType].move, (event) => {
     } else {
       rotateSnake(diffX > 0 ? "right" : "left");
     }
+    // if(mouseX > boardLeft && mouseY > boardTop){
+    //   paint(mouseX-boardLeft, mouseY-boardTop)
+    // }
   }
 });
 

@@ -64,23 +64,6 @@ body{
     display: none;
 }
 
-/* ========================================== cell ================================== */
-.block{
-    position: absolute;
-    height: var(--block-size);
-    width: var(--block-size);
-    background-color: rgb(88, 218, 110);
-    /* box-shadow: 0px 0px 2.5px rgba(0,0,0,0.5); */
-    border-radius: 2px;
-    /* right: 0; */
-    transition: all 0.2s cubic-bezier(.41,.71,.49,1.43);
-}
-
-.block-small{
-    width: 0px;
-    height: 0px;
-}
-
 /* ==========================================food types ============================*/
 [type="nitro"]{
     background-color: rgb(14, 167, 255);
@@ -158,7 +141,7 @@ body{
 .head-animation{
     transition: all 1s cubic-bezier(.41,.71,.49,1.43);
     top: 200px !important;
-    left: 140px !important;
+    left: 130px !important;
     transform: rotate(0) !important;
     width: 100px !important;
     height: 100px !important;
@@ -233,4 +216,96 @@ body{
     z-index: 100;
     font-family: Arial, 'Segoe UI';
     top: 130%;
+}
+/* ========================================= block styles */
+.block{
+    position: absolute;
+    height: var(--block-size);
+    width: var(--block-size);
+    background-color: rgb(240, 255, 36);
+    /* box-shadow: 0px 0px 2.5px rgba(0,0,0,0.5); */
+    border-radius: 3px;
+    /* right: 0; */
+    transition: all 0.2s cubic-bezier(.41,.71,.49,1.43);
+    -webkit-transition: all 0.2s cubic-bezier(.41,.71,.49,1.43);
+}
+
+.block-small{
+    width: 0px;
+    height: 0px;
+    transform: translate(50%, 50%);
+    -webkit-transform: translate(50%, 50%);
+}
+
+.side-left{
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+.side-right{
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+.side-top{
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+.side-bottom{
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+
+[class*='corner']::after,[class*='corner']::before{
+    content: "";
+    position: absolute;
+    height: 20px;
+    width: 20px;
+    left: 0px;
+    background-color: transparent;
+    border-radius: 3px;
+    box-shadow: 0px 0px 0px 2px rgb(240, 255, 36);
+    clip: rect(0,0,0,0)
+}
+[class*='corner']::after{
+    top: -20px;
+}
+
+[class*='corner']::before{
+    bottom: -20px;
+}
+
+.corner-top-left::after{
+    clip: rect(10px, 10px, 20px, 0px);
+}
+.corner-top-left{
+    border-top-left-radius: 0;
+}
+
+.corner-top-right::after{
+    clip: rect(10px, 20px, 20px, 10px);
+}
+.corner-top-right{
+    border-top-right-radius: 0;
+}
+
+.corner-top-left.corner-top-right::after {
+    clip: rect(10px, 20px, 20px, 0px);
+}
+
+.corner-bottom-right::before{
+    clip: rect(0px, 20px, 10px, 10px);
+}
+.corner-bottom-right{
+    border-bottom-right-radius: 0;
+}
+
+.corner-bottom-left::before{
+    clip: rect(0px, 10px, 10px, 0px);
+}
+.corner-bottom-left{
+    border-bottom-left-radius: 0;
+}
+
+.corner-bottom-left.corner-bottom-right::before {
+    clip: rect(0px, 20px, 10px, 0px);
 }
