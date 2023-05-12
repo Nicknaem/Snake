@@ -53,18 +53,24 @@
                 <button onclick="foodSpawnCheck()">check food spawn</button>
             </div>
         </div>
-        <div id="game-board">
+        <div class="game-board">
+            <div class="layer-list">
+                <div id="layer_1"></div>
+            </div>
             <div id="food-list"></div>
             <div id="snake-list">
                 <!-- <div id="snake_1"></div> -->
             </div>
-            <div class="layer-list">
-                <div id="layer_1"></div>
-            </div>
         </div>
         <div class="footer">
-            <img onclick="playPause()" src="./assets/pause.svg" width="35" height="35">
-            <img onclick="debug()" src="./assets/bug.png" width="32px" height="32px">
+            <!-- <img onclick="playPause()" src="./assets/pause.svg" width="35" height="35"> -->
+            <div onclick="playPause()" class="emoji-btn">▶</div>
+            <!-- <img onclick="debug()" src="./assets/bug.png" width="32px" height="32px"> -->
+            <div onclick="restartGame()" class="emoji-btn">🐍</div>
+
+            <div onclick="colorPalette(this)" class="emoji-btn">🎨</div>
+            <div onclick="newLayer()" class="emoji-btn">📜</div>
+            <div onclick="paintMode()" class="emoji-btn">🖌</div>
             <div style="display:none">
                 <input id="address" type="text">
                 <button onclick="connect()">Connect</button>
@@ -119,7 +125,7 @@ function debug(){
 //================================== static values
 let liveScoreDiv = document.getElementById('live-score');
 let topScoreDiv = document.getElementById('top-score');
-let boardDiv = document.getElementById('game-board');
+let boardDiv = document.querySelector('.game-board');
 let foodListDiv = document.getElementById('food-list');
 let snakeListDiv = document.getElementById('snake-list');
 
@@ -128,6 +134,7 @@ let boardWidth = boardDiv.getBoundingClientRect().width;
 let boardHeight = boardDiv.getBoundingClientRect().height; 
 let cellSize = 20; 
 let bonusApples = 0;
+let activeLayerDiv;
 // snakeColor
 
 let comments =[
@@ -189,7 +196,11 @@ if(topScore){
 }
 
 function restartGame(){
-
+    boardDiv.classList.remove('paint-mode');
+    if(activeLayerDiv){
+        activeLayerDiv.remove();
+    }
+    activeLayerDiv = null;
     if(topScore > 100 && limitMinutes()){
         alert('👀 მოუფრთხილდი ❤️❤️');
         return;
@@ -766,14 +777,75 @@ class Snake {
     //     }
     // })
 //================================ painter ============================
-let activeLayer = document.getElementById('layer_1');
+let layerListDiv = document.querySelector('.layer-list');
+// let activeLayerDiv;
 let activeBlock = 'grass'
+
+function insertHTML(target, template, position='beforeend'){
+    target.insertAdjacentHTML(position, template);
+    switch(position){
+        case 'beforeend': return target.lastElementChild; break;
+        case 'afterbegin': return target.firstElementChild; break;
+        case 'afterend': return target.nextElementSibling; break;
+        case 'beforebegin': return target.previousElementSibling; break;
+    }
+}
+
+let blockList = [
+    'grass',
+    'wood',
+    'leaves',
+    'water',
+    'dirt',
+    'apple',
+    'white',
+]
+
+function chooseBlock(element){
+    activeBlock = element.getAttribute('type')
+}
+
+function colorPalette(element){
+    let test = document.querySelector('.palette-container');
+    if(test){
+        test.classList.remove('palette-animated');
+        setTimeout(() => {
+            test.remove();
+        }, 300);
+        return
+    }
+    let paletteDiv = insertHTML(element, `
+        <div class="palette-container"></div>
+    `)
+
+    setTimeout(() => {
+        paletteDiv.classList.add('palette-animated');
+        insertHTML(paletteDiv, blockList.map((block)=>{
+            return `<div class="block-btn" onclick="chooseBlock(this)" type="${block}"></div>`
+        }).join(''))
+    }, 100);
+}
+
+function paintMode(){
+    snakeListDiv.innerHTML = '';
+    foodListDiv.innerHTML = '';
+    activeBlock = 'dirt'
+    boardDiv.classList.add('paint-mode');
+    newLayer();    
+}
+function newLayer(){
+    console.log(layerListDiv)
+    activeLayerDiv = insertHTML(layerListDiv, `
+        <div id="new_layer"></div>
+    `)
+}
+
 function paint(x,y){
     let correctX = x-x%cellSize 
     let correctY = y-y%cellSize
 
-    if(activeLayer.querySelector(`[style='left:${correctX}; top:${correctY}'][type='${activeBlock}']`)){
-        console.log('came')
+    if(activeLayerDiv.querySelector(`[style='left:${correctX}; top:${correctY}'][type='${activeBlock}']`)){
+        console.log('already exists')
         return;
     }
 
@@ -793,7 +865,7 @@ function paint(x,y){
 
     let sideClassList = [];
     sides.forEach((coord)=>{
-        let sideBlock = activeLayer.querySelector(`[style='left:${coord[0]}; top:${coord[1]}'][type='${activeBlock}']`);
+        let sideBlock = activeLayerDiv.querySelector(`[style='left:${coord[0]}; top:${coord[1]}'][type='${activeBlock}']`);
         if(sideBlock){
             sideClassList.push(coord[2]);
             sideBlock.classList.add(coord[3])
@@ -802,23 +874,22 @@ function paint(x,y){
 
     let cornerClassList = [];
     corners.forEach((coord)=>{
-        let cornerBlock = activeLayer.querySelector(`[style='left:${coord[0]}; top:${coord[1]}'][type='${activeBlock}']`);
+        let cornerBlock = activeLayerDiv.querySelector(`[style='left:${coord[0]}; top:${coord[1]}'][type='${activeBlock}']`);
         if(cornerBlock){
             cornerClassList.push(coord[2]);
             cornerBlock.classList.add(coord[3])
         }
     })
 
-    let blockDiv = `
+    let blockDiv = insertHTML(activeLayerDiv, `
         <div 
             class="block block-small ${sideClassList.join(' ')} ${cornerClassList.join(' ')}"
             type="${activeBlock}"
             style="left:${correctX}; top:${correctY}">
         </div>
-    `;
-    activeLayer.insertAdjacentHTML('beforeend', blockDiv);
+    `)
     setTimeout(() => {
-        activeLayer.lastElementChild.classList.remove('block-small');
+        blockDiv.classList.remove('block-small');
     }, 10);
 }
 //================================ swipe controller ====================
@@ -886,9 +957,9 @@ touchArea.addEventListener(events[deviceType].down, (event) => {
   initialY = mouseY;
   
   //todo should also restrict after right bottom corner
-//   if(mouseX > boardLeft && mouseY > boardTop){
-//       paint(mouseX-boardLeft, mouseY-boardTop)
-//   }
+  if(activeLayerDiv && mouseX > boardLeft && mouseY > boardTop){
+      paint(mouseX-boardLeft, mouseY-boardTop)
+  }
 });
 
 //Mousemove / touchmove
@@ -905,9 +976,9 @@ touchArea.addEventListener(events[deviceType].move, (event) => {
     } else {
       rotateSnake(diffX > 0 ? "right" : "left");
     }
-    // if(mouseX > boardLeft && mouseY > boardTop){
-    //   paint(mouseX-boardLeft, mouseY-boardTop)
-    // }
+    if(activeLayerDiv && mouseX > boardLeft && mouseY > boardTop){
+      paint(mouseX-boardLeft, mouseY-boardTop)
+    }
   }
 });
 
