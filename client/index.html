@@ -305,7 +305,7 @@ function spawnFood(foodAmount=1, type='apple'){
             return;
         }
 
-        if(type=='nitro' && liveScore < 15){
+        if(type=='nitro' && liveScore > 15){
             spawnFood(1, 'random');
             return;
         }

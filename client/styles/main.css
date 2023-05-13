@@ -74,7 +74,7 @@ body{
     background-color: #886ce4;
 }
 [type="dark"]{
-    background-color: rgb(20, 20, 20);
+    background-color: rgb(25, 25, 25);
 }
 [type="light"]{
     background-color: rgb(255, 240, 118);
@@ -230,6 +230,8 @@ body{
 .heart-list{
     position: absolute;
     font-size: 1.5em;
+    display: flex;
+    gap: 3px;
 }
 .heart{
     transition: all 0.2s ease-out;
