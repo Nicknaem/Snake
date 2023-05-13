@@ -30,6 +30,7 @@
             </div>
         </div>
         <div class="game-board">
+            <div style="display:none" class="position-check"></div>
             <div class="layer-list">
                 <div id="layer_1"></div>
             </div>
@@ -78,6 +79,7 @@ let topScoreDiv = document.getElementById('top-score');
 let boardDiv = document.querySelector('.game-board');
 let foodListDiv = document.getElementById('food-list');
 let snakeListDiv = document.getElementById('snake-list');
+let positionCheck = document.querySelector('.position-check');
 
 //================================== GameConfigurable values
 let boardWidth = boardDiv.getBoundingClientRect().width;
@@ -87,6 +89,7 @@ let bonusApples = 0;
 let activeLayerDiv;
 let startTime
 let date = new Date();
+let mainSnakeInterval;
 let GameState = {
     snakes: []
 };
@@ -110,12 +113,12 @@ let foodTypes = [
     '_multiple',
     'gold',
     '_purple',
-    '_red',
-    '_green',
-    '_orange',
     'dark',
     'light'
 ];
+// '_red',
+// '_green',
+// '_orange',
 
 let emojiList = [
     ['130','💊'],
@@ -131,7 +134,7 @@ function playPause(){
 
     if(!paused){
         paused = true;
-        clearInterval(snake.interval);
+        clearInterval(mainSnakeInterval);
     }else{
         paused = false;
         snake.interval = setInterval(() => {
@@ -171,9 +174,11 @@ if(topScore > 200){
 }
 
 function restartGame(){
+    clearInterval(mainSnakeInterval);
     boardDiv.classList.remove('paint-mode');
     if(activeLayerDiv){
         activeLayerDiv.remove();
+        layerListDiv.innerHTML = '';
     }
     activeLayerDiv = null;
     // if(topScore > 100 && limitMinutes()){
@@ -185,13 +190,12 @@ function restartGame(){
     foodListDiv.innerHTML = '';
     document.body.classList.remove('dark')
     spawnFood(10);
-
     Snakes[0] = new Snake()
     // Snakes.push(new Snake());
 
     Snakes.forEach((snake,index)=>{
         snake.spawnSnake();
-        snake.interval = setInterval(() => {
+        mainSnakeInterval = setInterval(() => {
             snake.updateSnake();
         }, snake.speed);
     })
@@ -284,7 +288,7 @@ function spawnFood(foodAmount){
             })
         });
 
-        if(type === document.body.className && !bypass){
+        if(type == document.body.getAttribute('theme') && !bypass){
             spawnFood(1);
             bypass = true
         }
@@ -401,15 +405,15 @@ class Snake {
     }
 
     nitro(speed, duration){
-        clearInterval(this.interval);
+        clearInterval(mainSnakeInterval);
 
-        this.interval = setInterval(() => {
+        mainSnakeInterval = setInterval(() => {
             this.updateSnake();
         }, speed);
 
         setTimeout(() => {
-            clearInterval(this.interval);
-            this.interval = setInterval(() => {
+            clearInterval(mainSnakeInterval);
+            mainSnakeInterval = setInterval(() => {
                 this.updateSnake();
             }, this.speed);
         }, duration);
@@ -426,7 +430,7 @@ class Snake {
                     topScoreDiv.innerText = topScore;
                 }
 
-                clearInterval(this.interval)
+                clearInterval(mainSnakeInterval)
 
                 this.snakeHeadDiv.classList.add('head-animation');
 
@@ -466,6 +470,9 @@ class Snake {
     }
 
     detectFoodHit(newPos){
+        // for debugging
+        // positionCheck.style.top = newPos.cellY
+        // positionCheck.style.left = newPos.cellX
         //checks if snake hit the foodCell
         Array.from(foodListDiv.children).forEach((foodDiv,index)=>{
             if(parseInt(foodDiv.style.top,10) == newPos.cellY && parseInt(foodDiv.style.left,10) === newPos.cellX){

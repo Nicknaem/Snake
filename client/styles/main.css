@@ -217,6 +217,14 @@ body{
     font-family: Arial, 'Segoe UI';
     top: 130%;
 }
+
+.position-check{
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: red;
+    border-radius: 50%;
+}
 /* ========================================= block styles */
 .block{
     position: absolute;
