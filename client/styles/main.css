@@ -216,16 +216,17 @@ body{
     border-radius: 7px;
     color: var(--food-color);
     background-color: white;
-    padding: 5px;
-    width: 180px;
+    width: 200px;
     box-shadow: 0 1px 6px 0px rgb(32 33 36 / 38%);
     z-index: 100;
     font-family: Arial, 'Segoe UI';
+    text-align: center;
     top: 130%;
 }
 .comment-animated{
     opacity: 1;
     width: 200px;
+    padding: 5 20px;
 }
 
 .position-check{
