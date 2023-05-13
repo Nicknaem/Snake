@@ -101,16 +101,40 @@ let GameState = {
 
 // snakeColor
 
-let comments =[
+let comments = [
     'მეტი შეგეძლო 😂',
     'კუდზე ვიკბინე 😬',
     'ნუ მჭამ 🍴🍣',
     'როცა გშია შენ შენ არხარ 🍫',
-    'სსს🩸🩸🩸',
-    'ნოოოოოოოოოოო',
+    'სსს... 🩸🩸🩸',
+    'ნოოო 😭😭😭',
     'ნუ მკბენ შე გველო 🐍',
     'ბანძო ბანძო 😛😛',
     'ამდენსაც არმოველოდი 😄',
+    'Send hearts to developer 😁😁❤️',
+    'ნამდვილად დაიმსახურე 😄',
+    'აღარვიცი რაგითხრა, შენ მოიფიქრე 😂😂',
+]
+
+lastComment='';
+
+function randomExcept(arr,except=''){
+    let result = arr[Math.floor(Math.random() * arr.length)];
+    if(result==except){
+        return randomExcept(arr, result)
+    }else{
+        return result;
+    }
+}
+
+let emojiList = [
+    ['200','🚑'],
+    ['150','🥇'],
+    ['130','💊'],
+    ['120','🐍'],
+    ['100','🏆'],
+    ['50','⭐'],
+    ['0','❤️']
 ]
 
 // '_red',
@@ -119,21 +143,22 @@ let comments =[
 
 //with rarity values
 let foodTypes = [
-    ['apple', 10],
+    ['apple', 9],
     ['nitro', 1],
     ['gold', 2],
-    ['heart', 1],
+    ['heart', 2],
     ['dark', 2],
     ['light', 2],
 ];
-
-let emojiList = [
-    ['130','💊'],
-    ['120','🐍'],
-    ['100','🏆'],
-    ['50','⭐'],
-    ['0','❤️']
-]
+let foodChances=[];
+function generateChances(){
+    foodTypes.forEach(([type,rarity]) => {
+        for (let i = 0; i < rarity; i++) {
+            foodChances.push(type);
+        }
+    });
+}
+generateChances();
     
 let paused = false;
 function playPause(){
@@ -292,16 +317,8 @@ shouldnot spawn same feature type
 function spawnFood(foodAmount=1, type='apple'){
     // let chance = Math.floor(Math.random()*3)==1;
     if(type == 'random'){
-        
-        let chanceArr = [];
 
-        foodTypes.forEach(([type,rarity]) => {
-            for (let i = 0; i < rarity; i++) {
-                chanceArr.push(type);
-            }
-        });
-        console.log(chanceArr)
-        type = chanceArr[Math.floor(Math.random()*chanceArr.length)];
+        type = foodChances[Math.floor(Math.random()*foodChances.length)];
 
         if(type=='heart' && this.hearts == 3){
             spawnFood(1, 'random');
@@ -495,14 +512,18 @@ class Snake {
                     }, 900);
                 })
                 setTimeout(() => {
-                    this.snakeHeadDiv.insertAdjacentHTML('beforeend',`
+                    lastComment = randomExcept(comments,lastComment);
+                    let comment = insertHTML(this.snakeHeadDiv,`
                         <div 
                             onclick="restartGame()"
                             class="comment">
-                            ${comments[Math.floor(Math.random() * comments.length-1) + 1]}
+                            ${lastComment}
                         </div>
                     `)
-                }, 900);
+                    setTimeout(() => {
+                        comment.classList.add('comment-animated')
+                    }, 10);
+                }, 1000);
 
                 // if(limit()){
                 //     let date = new Date()
@@ -531,6 +552,7 @@ class Snake {
                     break;
                     case 'gold':
                         spawnFood(5)
+                        spawnFood(1, 'random')
                     break;
                     case 'heart':
                         this.hearts++;

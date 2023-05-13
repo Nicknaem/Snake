@@ -138,6 +138,8 @@ body{
 /* =================================== animations */
 .head-animation{
     transition: all 1s cubic-bezier(.41,.71,.49,1.43);
+    display: flex;
+    justify-content: center;
     top: 200px !important;
     left: 130px !important;
     transform: rotate(0) !important;
@@ -208,15 +210,22 @@ body{
 }
 
 .comment{
+    transition: all 0.2s cubic-bezier(.41,.71,.49,1.43);
+    opacity: 0;
     position: absolute;
     border-radius: 7px;
     color: var(--food-color);
     background-color: white;
     padding: 5px;
+    width: 180px;
     box-shadow: 0 1px 6px 0px rgb(32 33 36 / 38%);
     z-index: 100;
     font-family: Arial, 'Segoe UI';
     top: 130%;
+}
+.comment-animated{
+    opacity: 1;
+    width: 200px;
 }
 
 .position-check{
