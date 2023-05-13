@@ -135,6 +135,8 @@ let boardHeight = boardDiv.getBoundingClientRect().height;
 let cellSize = 20; 
 let bonusApples = 0;
 let activeLayerDiv;
+let startTime
+let date = new Date()
 // snakeColor
 
 let comments =[
@@ -201,10 +203,11 @@ function restartGame(){
         activeLayerDiv.remove();
     }
     activeLayerDiv = null;
-    if(topScore > 100 && limitMinutes()){
-        alert('👀 მოუფრთხილდი ❤️❤️');
-        return;
-    }
+    // if(topScore > 100 && limitMinutes()){
+    //     alert('👀 მოუფრთხილდი ❤️❤️');
+    //     return;
+    // }
+    // startTime = null;
     snakeListDiv.innerHTML = '';
     foodListDiv.innerHTML = '';
     document.body.classList.remove('dark')
@@ -225,7 +228,6 @@ function restartGame(){
 //after some time when dead restart game and save user points
 
 function limit(){
-    let date = new Date()
     let limitMatch = `${date.getDay()}${date.getHours()}`;
     let limitMatchStored = localStorage.getItem('limitMatch');
     let count = localStorage.getItem('limitCount');
@@ -240,26 +242,29 @@ function limit(){
 }
 
 function limitMinutes(){
-    let date = new Date()
     let limitMatch = `${date.getDay()}`;
     let limitMatchStored = localStorage.getItem('limitDayMatch');
 
     if(limitMatch === limitMatchStored){
-        let startTime = localStorage.getItem('startTime');
-        let playTime = localStorage.getItem('playTime');
+        let totalPlayTime = parseInt(localStorage.getItem('totalPlayTime'));
+
         if(startTime){
-            if(startTime > date.getMinutes){ return false}
-            let totalTime = date.getMinutes() - startTime + playTime;
-            if( totalTime > 15){
+            let now = date.getMinutes() 
+            let matchTime = (now - startTime)
+            if(startTime > now){ 
+                matchTime = (60-startTime) + now;
+            }
+            let total = matchTime + totalPlayTime
+            console.log(total)
+            if( total > 25){
                 return true;
             }else{
-                localStorage.setItem('playTime',  date.getMinutes() - startTime);
+                localStorage.setItem('totalPlayTime', total );
             }
-        }else{
-            localStorage.setItem('startTime', date.getMinutes())
         }
     }else{
         localStorage.setItem('limitDayMatch', limitMatch);
+        localStorage.setItem('totalPlayTime', 0);
     }
     return false;
 }
@@ -294,10 +299,7 @@ function spawnFood(foodAmount){
         if(i==9){
             type = 'nitro'
         }
-        if(type === document.body.className){
-            spawnFood(1);
-            bypass = true
-        }
+    
         let foodX = randGridPos(boardWidth)
         let foodY = randGridPos(boardHeight)
 
@@ -311,6 +313,11 @@ function spawnFood(foodAmount){
                 }
             })
         });
+
+        if(type === document.body.className && !bypass){
+            spawnFood(1);
+            bypass = true
+        }
 
         if(!bypass){
             let foodDiv = `
@@ -536,6 +543,12 @@ class Snake {
                 //update snakes respective score
                 liveScore = this.snakeLength-3
                 liveScoreDiv.innerText = liveScore;
+
+                if(liveScore == 10){
+                    startTime = new Date().getMinutes();
+                    localStorage.setItem('startTime', startTime)
+                    console.log(localStorage)
+                }
             }
         })
 
