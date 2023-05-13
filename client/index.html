@@ -117,15 +117,14 @@ let comments =[
 // '_green',
 // '_orange',
 
+//with rarity values
 let foodTypes = [
-    'nitro',
-    'gold',
-    'heart',
-    'dark',
-    'light',
-    'apple',
-    'apple',
-    'apple',
+    ['apple', 10],
+    ['nitro', 1],
+    ['gold', 2],
+    ['heart', 1],
+    ['dark', 2],
+    ['light', 2],
 ];
 
 let emojiList = [
@@ -293,7 +292,16 @@ shouldnot spawn same feature type
 function spawnFood(foodAmount=1, type='apple'){
     // let chance = Math.floor(Math.random()*3)==1;
     if(type == 'random'){
-        type = foodTypes[Math.floor(Math.random()*foodTypes.length)];
+        
+        let chanceArr = [];
+
+        foodTypes.forEach(([type,rarity]) => {
+            for (let i = 0; i < rarity; i++) {
+                chanceArr.push(type);
+            }
+        });
+        console.log(chanceArr)
+        type = chanceArr[Math.floor(Math.random()*chanceArr.length)];
 
         if(type=='heart' && this.hearts == 3){
             spawnFood(1, 'random');
@@ -552,7 +560,6 @@ class Snake {
 
                 //if only one foodDiv left spawn new
                 if(foodListDiv.children.length==1){
-                    let type = foodTypes[Math.floor(Math.random()*foodTypes.length)];
                     spawnFood(2);
                     spawnFood(1, 'random')
                 }
