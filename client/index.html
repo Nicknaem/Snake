@@ -268,7 +268,9 @@ function spawnFood(foodAmount){
         let bypass = false;
 
         if(i === foodAmount-1){
-            lastFood = true
+            //i>1 because bypass versions come here and you get multiple lastfood chances
+            lastFood = i>1
+            console.log(lastFood)
         }
         if(i==9){
             type = 'nitro'
