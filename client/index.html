@@ -142,7 +142,7 @@ function playPause(){
         clearInterval(mainSnakeInterval);
     }else{
         paused = false;
-        snake.interval = setInterval(() => {
+        mainSnakeInterval = setInterval(() => {
             snake.updateSnake();
         }, snake.speed);
     }
@@ -196,15 +196,15 @@ function restartGame(){
     document.body.classList.remove('dark')
     spawnFood(10);
     Snakes[0] = new Snake()
-    Snakes[0].spawnSnake();
+    // Snakes[0].spawnSnake();
     // Snakes.push(new Snake());
 
-    // Snakes.forEach((snake,index)=>{
-    //     snake.spawnSnake();
-    //     mainSnakeInterval = setInterval(() => {
-    //         snake.updateSnake();
-    //     }, snake.speed);
-    // })
+    Snakes.forEach((snake,index)=>{
+        snake.spawnSnake();
+        mainSnakeInterval = setInterval(() => {
+            snake.updateSnake();
+        }, snake.speed);
+    })
     
 }
 
@@ -280,7 +280,7 @@ shouldnot spawn same feature type
 */
 
 //generate random coords so food is inside the board and not on snake position
-function spawnFood(foodAmount){
+function spawnFood(foodAmount=1){
     // let chance = Math.floor(Math.random()*3)==1;
     let type = foodTypes[Math.floor(Math.random()*foodTypes.length)];
 
@@ -715,68 +715,68 @@ class Snake {
         Snakes[0].moveQueue.shift();
     }
 
-    // document.addEventListener('keydown', (event)=>{
-    //     switch(event.key){
-    //         case 'ArrowLeft':
-    //             rotateSnake('left')
-    //         break;
-    //         case 'ArrowRight':
-    //             rotateSnake('right')
-    //         break;
-    //         case 'ArrowUp':
-    //             rotateSnake('up')
-    //         break;
-    //         case 'ArrowDown':
-    //             rotateSnake('down')
-    //         break;
-    //     };
-    //     // Snakes[0].updateSnake(game);
-    // })
-
-    //======================================================== manual control snakes wsad and arrows
     document.addEventListener('keydown', (event)=>{
-
         switch(event.key){
             case 'ArrowLeft':
-                Snakes[0].moveQueue.push('left')
-                Snakes[0].moveQueue.shift()
+                rotateSnake('left')
             break;
             case 'ArrowRight':
-
-                Snakes[0].moveQueue.push('right')
-                Snakes[0].moveQueue.shift()
+                rotateSnake('right')
             break;
             case 'ArrowUp':
-                Snakes[0].moveQueue.push('up')
-                Snakes[0].moveQueue.shift()
+                rotateSnake('up')
             break;
             case 'ArrowDown':
-                Snakes[0].moveQueue.push('down')
-                Snakes[0].moveQueue.shift()
+                rotateSnake('down')
             break;
         };
-        Snakes[0].updateSnake();
-        if(Snakes[1]!=undefined){
-            switch(event.key){
-            case 'a':
-                Snakes[1].moveQueue.push('left')
-                Snakes[1].moveQueue.shift()
-            break;
-            case 'd':
-                Snakes[1].moveQueue.push('right')
-                Snakes[1].moveQueue.shift()
-            break;
-            case 'w':
-                Snakes[1].moveQueue.push('up')
-                Snakes[1].moveQueue.shift()
-            break;
-            case 's':
-                Snakes[1].moveQueue.push('down')
-                Snakes[1].moveQueue.shift()
-            break;
-        };
-        }
+        // Snakes[0].updateSnake(game);
     })
+
+    //======================================================== manual control snakes wsad and arrows
+    // document.addEventListener('keydown', (event)=>{
+
+    //     switch(event.key){
+    //         case 'ArrowLeft':
+    //             Snakes[0].moveQueue.push('left')
+    //             Snakes[0].moveQueue.shift()
+    //         break;
+    //         case 'ArrowRight':
+
+    //             Snakes[0].moveQueue.push('right')
+    //             Snakes[0].moveQueue.shift()
+    //         break;
+    //         case 'ArrowUp':
+    //             Snakes[0].moveQueue.push('up')
+    //             Snakes[0].moveQueue.shift()
+    //         break;
+    //         case 'ArrowDown':
+    //             Snakes[0].moveQueue.push('down')
+    //             Snakes[0].moveQueue.shift()
+    //         break;
+    //     };
+    //     Snakes[0].updateSnake();
+    //     if(Snakes[1]!=undefined){
+    //         switch(event.key){
+    //         case 'a':
+    //             Snakes[1].moveQueue.push('left')
+    //             Snakes[1].moveQueue.shift()
+    //         break;
+    //         case 'd':
+    //             Snakes[1].moveQueue.push('right')
+    //             Snakes[1].moveQueue.shift()
+    //         break;
+    //         case 'w':
+    //             Snakes[1].moveQueue.push('up')
+    //             Snakes[1].moveQueue.shift()
+    //         break;
+    //         case 's':
+    //             Snakes[1].moveQueue.push('down')
+    //             Snakes[1].moveQueue.shift()
+    //         break;
+    //     };
+    //     }
+    // })
 //================================ painter ============================
 let layerListDiv = document.querySelector('.layer-list');
 // let activeLayerDiv;
