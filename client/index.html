@@ -16,30 +16,6 @@
             .catch(e=>{});
         };
     </script>
-    <!-- <script type="module" defer>
-        import { io } from "https://cdn.socket.io/4.3.2/socket.io.esm.min.js";
-        const socket = io('localhost:3000');
-        socket.on('connect', ()=>{
-            console.log('connected')
-        })
-    </script> -->
-
-    <!-- <script src="libs/socket.io.js"></script> -->
-    
-    <!-- <script defer>
-        // Array(100).fill(0).forEach((item,index)=>{console.log(index, String.fromCharCode(index))})
-        function connect(){
-            let address = document.querySelector('#address');
-            if(address){
-                let path = '5.'+iptotext(address.value,3);   
-                console.log(path)
-                let socket = io(path)
-            }else{
-                let socket = io('http://localhost:3000')
-            }
-        }
-    </script> -->
-   
     <link rel="stylesheet" href="./styles/main.css">
 </head>
 
@@ -63,38 +39,16 @@
             </div>
         </div>
         <div class="footer">
-            <!-- <img onclick="playPause()" src="./assets/pause.svg" width="35" height="35"> -->
             <div onclick="playPause()" class="emoji-btn">▶</div>
-            <!-- <img onclick="debug()" src="./assets/bug.png" width="32px" height="32px"> -->
             <div onclick="restartGame()" class="emoji-btn">🐍</div>
-
             <div onclick="colorPalette(this)" class="emoji-btn">🎨</div>
             <div onclick="newLayer()" class="emoji-btn">📜</div>
             <div onclick="paintMode()" class="emoji-btn">🖌</div>
-            <div style="display:none">
-                <input id="address" type="text">
-                <button onclick="connect()">Connect</button>
-            </div>
         </div>
     </div>
 </body>
 <script>
-
-let paused = false;
-function playPause(){
-    let snake = Snakes[0];
-
-    if(!paused){
-        paused = true;
-        clearInterval(snake.interval);
-    }else{
-        paused = false;
-        snake.interval = setInterval(() => {
-            snake.updateSnake();
-        }, snake.speed);
-    }
-}
-
+//============================= global utils
 let html = {
     log: (info)=>{
         let log = document.querySelector('.log')
@@ -114,13 +68,9 @@ let html = {
 function remove(element){
     element.remove()
 }
-function debug(){
-    // let snake = Snakes[0];
-    html.log('foodlist element count: '+foodListDiv.children.length);
-    html.log(foodListDiv.children);
-    html.log('found food count: ' + document.querySelectorAll('.food').length);
-    html.log(document.querySelectorAll('.food'));
-}
+</script>
+
+<script>
 
 //================================== static values
 let liveScoreDiv = document.getElementById('live-score');
@@ -136,7 +86,11 @@ let cellSize = 20;
 let bonusApples = 0;
 let activeLayerDiv;
 let startTime
-let date = new Date()
+let date = new Date();
+let GameState = {
+    snakes: []
+};
+
 // snakeColor
 
 let comments =[
@@ -171,6 +125,29 @@ let emojiList = [
     ['0','❤️']
 ]
     
+let paused = false;
+function playPause(){
+    let snake = Snakes[0];
+
+    if(!paused){
+        paused = true;
+        clearInterval(snake.interval);
+    }else{
+        paused = false;
+        snake.interval = setInterval(() => {
+            snake.updateSnake();
+        }, snake.speed);
+    }
+}
+
+function debug(){
+    // let snake = Snakes[0];
+    html.log('foodlist element count: '+foodListDiv.children.length);
+    html.log(foodListDiv.children);
+    html.log('found food count: ' + document.querySelectorAll('.food').length);
+    html.log(document.querySelectorAll('.food'));
+}
+
 function eyeType(amount){
     for(item of emojiList){
         if(liveScore >= item[0]){
@@ -179,22 +156,18 @@ function eyeType(amount){
     }
 }
 
-let GameState = {
-    snakes: []
-};
-
+//======================================= scores =======================
 let topScore = localStorage.getItem('topScore');
-if(topScore == 196){
-    localStorage.setItem('topScore', 199)
-    topScore = 199;
-}
 let liveScore = 0;
-topScoreDiv.innerText = topScore;
 liveScoreDiv.innerText = liveScore;
 
 if(topScore){
     topScoreDiv.innerText = topScore;
     bonusApples = Math.floor(topScore/10); 
+}
+
+if(topScore > 200){
+    document.querySelector('.footer').innerHTML = '<div onclick="playPause()" class="emoji-btn">▶</div><div></div>'
 }
 
 function restartGame(){
@@ -224,8 +197,6 @@ function restartGame(){
     })
     
 }
-//timer
-//after some time when dead restart game and save user points
 
 function limit(){
     let limitMatch = `${date.getDay()}${date.getHours()}`;
@@ -285,7 +256,6 @@ shouldnot spawn same feature type
 
 //generate random coords so food is inside the board and not on snake position
 function spawnFood(foodAmount){
-    // let stop = false;
     // let chance = Math.floor(Math.random()*3)==1;
     let type = foodTypes[Math.floor(Math.random()*foodTypes.length)];
 
@@ -320,19 +290,17 @@ function spawnFood(foodAmount){
         }
 
         if(!bypass){
-            let foodDiv = `
+            let foodDiv = insertHTML(foodListDiv,`
                 <div 
                     class="food food-small"
                     type="${lastFood ? type : ''}"
                     style="left:${foodX}; top:${foodY}">
                 </div>
-            `;
-            foodListDiv.insertAdjacentHTML('beforeend', foodDiv);
+            `);
+
             setTimeout(() => {
-                for( foodDiv of foodListDiv.children){
                     foodDiv.classList.remove('food-small');
-                }
-            }, 100);
+            }, 10);
         }
     }
 }
@@ -488,14 +456,14 @@ class Snake {
                 //     alert(`უკვე 15 ჯერ სცადე 😂 ცუდად არ გახდე 😄❤️ ${61 - date.getMinutes()} წუთში შეგეშვები 😁`);
                 // }
                 return;
-
-                // document.querySelector(`#snake_1 > div:nth-child(${this.snakeHeadDivPos})`).style.boxShadow = "0px 0px 15px rgba(0,0,0,0.9)";
                 //or eat tail and coninue playing, sounds more fun
             }
         }
     }
 
-    //detectSnakeHit ooouhh shiiit
+    detectSnakeHit(){
+        //detectSnakeHit ooouhh shiiit
+    }
 
     detectFoodHit(newPos){
         //checks if snake hit the foodCell
@@ -503,7 +471,7 @@ class Snake {
             if(parseInt(foodDiv.style.top,10) == newPos.cellY && parseInt(foodDiv.style.left,10) === newPos.cellX){
                 switch(foodDiv.getAttribute('type')){
                     case 'nitro':
-                        this.nitro(20,3000);
+                        this.nitro(20,2000);
                     break;
                     case 'gold':
                         spawnFood(6)
@@ -544,11 +512,10 @@ class Snake {
                 liveScore = this.snakeLength-3
                 liveScoreDiv.innerText = liveScore;
 
-                if(liveScore == 10){
-                    startTime = new Date().getMinutes();
-                    localStorage.setItem('startTime', startTime)
-                    console.log(localStorage)
-                }
+                // if(liveScore == 10){
+                //     startTime = new Date().getMinutes();
+                //     localStorage.setItem('startTime', startTime)
+                // }
             }
         })
 
@@ -675,31 +642,10 @@ class Snake {
     // snakeOne.spawnSnake();
     // snakeTwo.spawnSnake();
 
-    // var Snakes = [new Snake()]
-    // Snakes.push(new Snake());
-
-    // Snakes.forEach((snake,index)=>{
-    //     snake.spawnSnake();
-    //     snake.interval = setInterval(() => {
-    //         snake.updateSnake();
-    //     }, snake.speed);
-    // })
     var Snakes = [];
-    restartGame();
+    restartGame();  
 
-//change speed function to re initialize intervals
-    // clearInterval( Snakes[0].interval );
-    // Snakes[0].speed = 50;
-
-    // Snakes.forEach((snake,index)=>{
-    //     snake.interval = setInterval(() => {
-    //         snake.updateSnake();
-    //     }, snake.speed);
-    // })
-
-    
-
-    // ============================================================ button test functions
+// ============================================================ button test functions
     function animateSnake(){
         game.snakeAnimated = !game.snakeAnimated;
         [...document.querySelectorAll('[id*=snake] > div')].forEach((item)=>{
@@ -946,6 +892,7 @@ const isTouchDevice = () => {
     return false;
   }
 };
+isTouchDevice();
 
 //Get left and top of touchArea
 let rectLeft = touchArea.getBoundingClientRect().left;
@@ -959,7 +906,6 @@ const getXY = (e) => {
   mouseY = (!isTouchDevice() ? e.pageY : e.touches[0].pageY) - rectTop;
 };
 
-isTouchDevice();
 
 //Start Swipe
 touchArea.addEventListener(events[deviceType].down, (event) => {
@@ -977,22 +923,25 @@ touchArea.addEventListener(events[deviceType].down, (event) => {
 
 //Mousemove / touchmove
 touchArea.addEventListener(events[deviceType].move, (event) => {
-  if (!isTouchDevice()) {
+    // if (!isTouchDevice()) {
+    //     event.preventDefault();
+    // }
     event.preventDefault();
-  }
-  if (isSwiped) {
-    getXY(event);
-    let diffX = mouseX - initialX;
-    let diffY = mouseY - initialY;
-    if (Math.abs(diffY) > Math.abs(diffX)) {
-      rotateSnake(diffY > 0 ? "down" : "up");
-    } else {
-      rotateSnake(diffX > 0 ? "right" : "left");
+    if (isSwiped) {
+        getXY(event);
+        let diffX = mouseX - initialX;
+        let diffY = mouseY - initialY;
+
+        if (Math.abs(diffY) > Math.abs(diffX)) {
+            rotateSnake(diffY > 0 ? "down" : "up");
+        } else {
+            rotateSnake(diffX > 0 ? "right" : "left");
+        }
+
+        if(activeLayerDiv && mouseX > boardLeft && mouseY > boardTop){
+            paint(mouseX-boardLeft, mouseY-boardTop)
+        }
     }
-    if(activeLayerDiv && mouseX > boardLeft && mouseY > boardTop){
-      paint(mouseX-boardLeft, mouseY-boardTop)
-    }
-  }
 });
 
 //Stop Drawing
