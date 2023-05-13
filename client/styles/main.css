@@ -28,9 +28,8 @@ body{
     position: absolute;
     height: var(--cell-size);
     width: var(--cell-size);
-    background-color: var(--food-color);
     box-shadow: 0px 0px 2.5px rgba(0,0,0,0.5);
-    border-radius: 2px;
+    border-radius: 3px;
     right: 0;
     transition: all 0.2s cubic-bezier(.41,.71,.49,1.43);
 }
@@ -71,8 +70,14 @@ body{
 [type="gold"]{
     background-color: rgb(255, 171, 14);
 }
-[type="purple"]{
+[type="heart"]{
     background-color: #886ce4;
+}
+[type="dark"]{
+    background-color: rgb(20, 20, 20);
+}
+[type="light"]{
+    background-color: rgb(255, 240, 118);
 }
 [type="red"], [color="red"] > div{
     background-color: rgb(241, 60, 60);
@@ -84,12 +89,6 @@ body{
 [type="orange"], [color="orange"] > div{
     background-color: rgb(255, 144, 40);
     --face-shade: rgb(248, 189, 141);
-}
-[type="dark"]{
-    background-color: rgb(20, 20, 20);
-}
-[type="light"]{
-    background-color: rgb(233, 255, 32);
 }
 /* =================================== Snake Head ================================== */
 .eyes{
@@ -379,8 +378,8 @@ body{
     box-shadow: 0 0 8px 0px rgb(32 33 36 / 38%);
 }
 [type='apple']{
-    background-color: #ec6157;
-    --active-block-color: #ec6157;
+    background-color: var(--food-color);
+    --active-block-color: var(--food-color);
 }
 [type='grass']{
     background-color: #4cbb55;

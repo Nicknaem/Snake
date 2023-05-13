@@ -113,16 +113,19 @@ let comments =[
     'ამდენსაც არმოველოდი 😄',
 ]
 
+// '_red',
+// '_green',
+// '_orange',
+
 let foodTypes = [
-    '_nitro',
-    '_multiple',
+    'nitro',
     'gold',
-    'purple',
-    '_red',
-    '_green',
-    '_orange',
+    'heart',
     'dark',
-    'light'
+    'light',
+    'apple',
+    'apple',
+    'apple',
 ];
 
 let emojiList = [
@@ -194,7 +197,14 @@ function restartGame(){
     snakeListDiv.innerHTML = '';
     foodListDiv.innerHTML = '';
     document.body.classList.remove('dark')
-    spawnFood(10);
+
+    spawnFood(5);
+    spawnFood(1,'nitro');
+    spawnFood(1,'heart');
+    spawnFood(1,'dark');
+    spawnFood(1,'light');
+    spawnFood(1,'gold');
+
     Snakes[0] = new Snake()
     // Snakes[0].spawnSnake();
     // Snakes.push(new Snake());
@@ -280,26 +290,29 @@ shouldnot spawn same feature type
 */
 
 //generate random coords so food is inside the board and not on snake position
-function spawnFood(foodAmount=1){
+function spawnFood(foodAmount=1, type='apple'){
     // let chance = Math.floor(Math.random()*3)==1;
-    let type = foodTypes[Math.floor(Math.random()*foodTypes.length)];
+    if(type == 'random'){
+        type = foodTypes[Math.floor(Math.random()*foodTypes.length)];
+
+        if(type=='heart' && this.hearts == 3){
+            spawnFood(1, 'random');
+            return;
+        }
+        
+        if(type == document.body.getAttribute('theme')){
+            spawnFood(1, 'random');
+            return;
+        }
+
+        if(type=='nitro' && liveScore < 15){
+            spawnFood(1, 'random');
+            return;
+        }
+    }
 
     for(let i=0; i<foodAmount; i++){
-        let lastFood
         let bypass = false;
-
-        if(i === foodAmount-1){
-            //i>1 because bypass versions come here and you get multiple lastfood chances
-            lastFood = i>1
-            console.log(lastFood)
-        }
-        if(i==9){
-            type = 'nitro'
-        }
-        if(this.hearts == 3){
-            spawnFood(1);
-            bypass = true;
-        }
     
         let foodX = randGridPos(boardWidth)
         let foodY = randGridPos(boardHeight)
@@ -309,22 +322,17 @@ function spawnFood(foodAmount=1){
         GameState.snakes.forEach(snake => {
             snake.forEach((cell)=>{
                 if(cell.cellX === foodX && cell.cellY === foodY){
-                    spawnFood(1);
+                    spawnFood();
                     bypass = true;
                 }
             })
         });
 
-        if(type == document.body.getAttribute('theme') && !bypass){
-            spawnFood(1);
-            bypass = true
-        }
-
         if(!bypass){
             let foodDiv = insertHTML(foodListDiv,`
                 <div 
                     class="food food-small"
-                    type="${lastFood ? type : ''}"
+                    type="${type}"
                     style="left:${foodX}; top:${foodY}">
                 </div>
             `);
@@ -514,9 +522,9 @@ class Snake {
                         this.nitro(20,2000);
                     break;
                     case 'gold':
-                        spawnFood(6)
+                        spawnFood(5)
                     break;
-                    case 'purple':
+                    case 'heart':
                         this.hearts++;
                         heartChange(true);
                     break;
@@ -544,7 +552,9 @@ class Snake {
 
                 //if only one foodDiv left spawn new
                 if(foodListDiv.children.length==1){
-                    spawnFood(3);
+                    let type = foodTypes[Math.floor(Math.random()*foodTypes.length)];
+                    spawnFood(2);
+                    spawnFood(1, 'random')
                 }
                 foodDiv.remove(); 
                 this.snakeExpand()
@@ -694,16 +704,15 @@ class Snake {
         });
     }
 
-    var interval
+    var fooder
     function foodSpawnCheck(){
-        if(interval === undefined){
-            interval = setInterval(() => {
-                game.spawnFood(4);
-                foodSpawn = undefined;
+        if(fooder === undefined){
+            fooder = setInterval(() => {
+                spawnFood(4);
             }, 50);
         }else{
-            clearInterval(interval); 
-            interval = undefined;
+            clearInterval(fooder); 
+            fooder = undefined;
         }
         
     }
