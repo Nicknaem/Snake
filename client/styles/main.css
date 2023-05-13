@@ -69,11 +69,10 @@ body{
     background-color: rgb(14, 167, 255);
 }
 [type="gold"]{
-    background-color: rgb(255, 191, 14);
+    background-color: rgb(255, 171, 14);
 }
-[type="purple"], [color="purple"] > div{
-    background-color: rgb(221, 62, 165);
-    --face-shade: rgb(238, 171, 190);
+[type="purple"]{
+    background-color: #886ce4;
 }
 [type="red"], [color="red"] > div{
     background-color: rgb(241, 60, 60);
@@ -90,7 +89,7 @@ body{
     background-color: rgb(20, 20, 20);
 }
 [type="light"]{
-    background-color: rgb(231, 255, 14);
+    background-color: rgb(233, 255, 32);
 }
 /* =================================== Snake Head ================================== */
 .eyes{
@@ -186,6 +185,9 @@ body{
     display: flex;
     gap: 100px;
     margin: 5px 0 5px 0;
+    width: 360px;
+    justify-content: space-around;
+    align-items: center;
 }
 
 .footer{
@@ -224,6 +226,17 @@ body{
     height: 10px;
     background-color: red;
     border-radius: 50%;
+}
+
+.heart-list{
+    position: absolute;
+    font-size: 1.5em;
+}
+.heart{
+    transition: all 0.2s ease-out;
+}
+.small-heart{
+    font-size: 0;
 }
 /* ========================================= block styles */
 .block{
