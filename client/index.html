@@ -88,8 +88,10 @@ let positionCheck = document.querySelector('.position-check');
 let heartListDiv = document.querySelector('.heart-list')
 //================================== GameConfigurable values
 let boardWidth = window.screen.width - window.screen.width % 20; 
-let boardHeight = window.screen.height - window.screen.height%20 - 300; 
-console.log(boardWidth)
+let boardHeight = window.screen.height - window.screen.height%20 - 320; 
+if(boardWidth > 1200){
+    boardWidth = 700;
+}
 boardDiv.style.width = boardWidth;
 boardDiv.style.height = boardHeight;
 let cellSize = 20; 
@@ -195,7 +197,7 @@ function eyeType(amount){
 
 //======================================= scores =======================
 let topScore = localStorage.getItem('topScore');
-localStorage.setItem('topScore', 212);
+// localStorage.setItem('topScore', 212);
 let liveScore = 0;
 liveScoreDiv.innerText = liveScore;
 
