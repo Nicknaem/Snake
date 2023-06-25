@@ -87,8 +87,11 @@ let snakeListDiv = document.getElementById('snake-list');
 let positionCheck = document.querySelector('.position-check');
 let heartListDiv = document.querySelector('.heart-list')
 //================================== GameConfigurable values
-let boardWidth = boardDiv.getBoundingClientRect().width;
-let boardHeight = boardDiv.getBoundingClientRect().height; 
+let boardWidth = window.screen.width - window.screen.width % 20; 
+let boardHeight = window.screen.height - window.screen.height%20 - 300; 
+console.log(boardWidth)
+boardDiv.style.width = boardWidth;
+boardDiv.style.height = boardHeight;
 let cellSize = 20; 
 let bonusApples = 0;
 let activeLayerDiv;
@@ -165,10 +168,10 @@ function playPause(){
 
     if(!paused){
         paused = true;
-        clearInterval(mainSnakeInterval);
+        clearInterval(Snakes[0].interval);
     }else{
         paused = false;
-        mainSnakeInterval = setInterval(() => {
+        Snakes[0].interval = setInterval(() => {
             snake.updateSnake();
         }, snake.speed);
     }
@@ -192,6 +195,7 @@ function eyeType(amount){
 
 //======================================= scores =======================
 let topScore = localStorage.getItem('topScore');
+localStorage.setItem('topScore', 212);
 let liveScore = 0;
 liveScoreDiv.innerText = liveScore;
 
@@ -204,8 +208,21 @@ if(topScore > 200){
     document.querySelector('.footer').innerHTML = '<div onclick="playPause()" class="emoji-btn">▶</div><div></div>'
 }
 
+function createSnake(color = 'green'){
+    Snakes.push(new Snake())
+    let newSnake = Snakes[Snakes.length-1];
+
+    newSnake.color = color;
+    newSnake.spawnSnake();
+    newSnake.interval = setInterval(() => {
+        newSnake.updateSnake();
+    }, newSnake.speed);
+}
+
 function restartGame(){
-    clearInterval(mainSnakeInterval);
+    if(Snakes[0]){
+        clearInterval(Snakes[0].interval);
+    }
     boardDiv.classList.remove('paint-mode');
     if(activeLayerDiv){
         activeLayerDiv.remove();
@@ -228,16 +245,14 @@ function restartGame(){
     spawnFood(1,'light');
     spawnFood(1,'gold');
 
-    Snakes[0] = new Snake()
-    // Snakes[0].spawnSnake();
-    // Snakes.push(new Snake());
+    createSnake();
 
-    Snakes.forEach((snake,index)=>{
-        snake.spawnSnake();
-        mainSnakeInterval = setInterval(() => {
-            snake.updateSnake();
-        }, snake.speed);
-    })
+    // Snakes.forEach((snake,index)=>{
+    //     snake.spawnSnake();
+    //     mainSnakeInterval = setInterval(() => {
+    //         snake.updateSnake();
+    //     }, snake.speed);
+    // })
     
 }
 
@@ -374,6 +389,7 @@ class Snake {
         // super(); //when extended from another class
 
         this.speed = 120;
+        this.color = 'green'
         this.interval;
 
         this.snakeDiv;
@@ -397,7 +413,7 @@ class Snake {
         let elementX = randGridPos(boardWidth)
         let elementY = randGridPos(boardHeight)
 
-        snakeListDiv.insertAdjacentHTML('beforeend',`<div id='snake_${Snake.id}'></div>`)
+        snakeListDiv.insertAdjacentHTML('beforeend',`<div id='snake_${Snake.id}' color="${this.color}"></div>`)
         this.snakeDiv = document.getElementById(`snake_${Snake.id}`);
 
         for(let i = 0; i < this.snakeLength; i++){
@@ -465,15 +481,15 @@ class Snake {
     }
 
     nitro(speed, duration){
-        clearInterval(mainSnakeInterval);
+        clearInterval(this.interval);
 
-        mainSnakeInterval = setInterval(() => {
+        this.interval = setInterval(() => {
             this.updateSnake();
         }, speed);
 
         setTimeout(() => {
-            clearInterval(mainSnakeInterval);
-            mainSnakeInterval = setInterval(() => {
+            clearInterval(this.interval);
+            this.interval = setInterval(() => {
                 this.updateSnake();
             }, this.speed);
         }, duration);
@@ -495,7 +511,7 @@ class Snake {
                     topScoreDiv.innerText = topScore;
                 }
 
-                clearInterval(mainSnakeInterval)
+                clearInterval(this.interval)
 
                 this.snakeHeadDiv.classList.add('head-animation');
 
@@ -747,9 +763,9 @@ class Snake {
 
     //============================================================ controller functions
     
-    function rotateSnake(direction){
-        Snakes[0].moveQueue.push(direction);
-        Snakes[0].moveQueue.shift();
+    function rotateSnake(direction, snakeIndex=0){
+        Snakes[snakeIndex].moveQueue.push(direction);
+        Snakes[snakeIndex].moveQueue.shift();
     }
 
     document.addEventListener('keydown', (event)=>{
@@ -765,6 +781,25 @@ class Snake {
             break;
             case 'ArrowDown':
                 rotateSnake('down')
+            break;
+        };
+
+        if(event.key==='+'){
+            createSnake('nitro');
+        }
+
+        switch(event.key){
+            case 'a':
+                rotateSnake('left',1)
+            break;
+            case 'd':
+                rotateSnake('right',1)
+            break;
+            case 'w':
+                rotateSnake('up',1)
+            break;
+            case 's':
+                rotateSnake('down',1)
             break;
         };
         // Snakes[0].updateSnake(game);
@@ -793,23 +828,23 @@ class Snake {
     //         break;
     //     };
     //     Snakes[0].updateSnake();
-    //     if(Snakes[1]!=undefined){
+    //     if(Snakes[0]!=undefined){
     //         switch(event.key){
     //         case 'a':
-    //             Snakes[1].moveQueue.push('left')
-    //             Snakes[1].moveQueue.shift()
+    //             Snakes[0].moveQueue.push('left')
+    //             Snakes[0].moveQueue.shift()
     //         break;
     //         case 'd':
-    //             Snakes[1].moveQueue.push('right')
-    //             Snakes[1].moveQueue.shift()
+    //             Snakes[0].moveQueue.push('right')
+    //             Snakes[0].moveQueue.shift()
     //         break;
     //         case 'w':
-    //             Snakes[1].moveQueue.push('up')
-    //             Snakes[1].moveQueue.shift()
+    //             Snakes[0].moveQueue.push('up')
+    //             Snakes[0].moveQueue.shift()
     //         break;
     //         case 's':
-    //             Snakes[1].moveQueue.push('down')
-    //             Snakes[1].moveQueue.shift()
+    //             Snakes[0].moveQueue.push('down')
+    //             Snakes[0].moveQueue.shift()
     //         break;
     //     };
     //     }

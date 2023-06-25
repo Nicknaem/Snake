@@ -64,8 +64,9 @@ body{
 }
 
 /* ==========================================food types ============================*/
-[type="nitro"]{
+[type="nitro"], [color="nitro"] > div{
     background-color: rgb(14, 167, 255);
+    --face-shade: rgb(126, 208, 255);
 }
 [type="gold"]{
     background-color: rgb(255, 171, 14);
@@ -174,8 +175,6 @@ body{
 
 .game-board{
     position: relative;
-    width: 360px;
-    height: 500px;
     /* border: 1px inset black; */
     box-shadow: var(--board-shadow);
     border-radius: 10px;
@@ -184,6 +183,7 @@ body{
 
 .header{
     display: flex;
+    height: 50px;
     gap: 100px;
     margin: 5px 0 5px 0;
     width: 360px;
@@ -193,6 +193,7 @@ body{
 
 .footer{
     display: flex;
+    height: 50px;
     /* gap: 20px; */
     justify-content: space-between;
     margin-top: 20px;
